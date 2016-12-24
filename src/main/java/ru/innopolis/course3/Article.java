@@ -3,7 +3,7 @@ package ru.innopolis.course3;
 /**
  * @author Danil Popov
  */
-public class Article {
+public class Article extends BaseModel {
 
     private int id;
     private String title;

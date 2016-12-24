@@ -3,12 +3,13 @@ package ru.innopolis.course3;
 /**
  * @author Danil Popov
  */
-public class User {
+public class User extends BaseModel {
 
     private int id;
     private String name;
     private String password;
-    private boolean role;
+    private boolean isAdmin;
+    private boolean isActive;
 
     public int getId() {
         return id;
@@ -34,11 +35,19 @@ public class User {
         this.password = password;
     }
 
-    public boolean isRole() {
-        return role;
+    public boolean isAdmin() {
+        return isAdmin;
     }
 
-    public void setRole(boolean role) {
-        this.role = role;
+    public void setIsAdmin(boolean role) {
+        this.isAdmin = role;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean active) {
+        isActive = active;
     }
 }

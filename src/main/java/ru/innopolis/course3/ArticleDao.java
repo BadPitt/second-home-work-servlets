@@ -17,13 +17,20 @@ public class ArticleDao implements Dao<Article> {
     private static final Logger logger = LoggerFactory.getLogger(ArticleDao.class);
 
     private static final String ADD_ARTICLE = "INSERT INTO ARTICLE " +
-            "(TITLE, SOURCE, USER_ID) VALUES (?, ?, ?)";
+            "(TITLE, SOURCE, USER_ID, DATE)" +
+            " VALUES (?, ?, ?, ?);";
     private static final String UPDATE_ARTICLE = "UPDATE ARTICLE " +
-            " SET TITLE=?, SOURCE=?, USER_ID=? WHERE ARTICLE_ID=?;";
+            " SET TITLE=?, SOURCE=?, DATE=?, USER_ID=?" +
+            " WHERE ARTICLE_ID=?;";
     private static final String DELETE_ARTICLE = "DELETE FROM ARTICLE " +
-            "WHERE ARTICLE_ID = ?;";
-    private static final String GET_ALL_ARTICLE = "SELECT ARTICLE_ID, " +
-            "TITLE, SOURCE, USER_ID FROM ARTICLE;";
+            " WHERE ARTICLE_ID = ?;";
+    private static final String GET_ALL_ARTICLE = "SELECT A.ARTICLE_ID, A.TITLE, A.SOURCE," +
+            "    A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.ROLE" +
+            " FROM ARTICLE A join P_USER U on A.USER_ID=U.USER_ID;";
+    private static final String GET_ARTICLE = "SELECT A.ARTICLE_ID, A.TITLE, A.SOURCE," +
+            "    A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.ROLE" +
+            " FROM ARTICLE A join P_USER U on A.USER_ID=U.USER_ID " +
+            " WHERE A.ARTICLE_ID = ?;";
 
     @Override
     public void add(Article o) {
@@ -33,6 +40,7 @@ public class ArticleDao implements Dao<Article> {
             statement.setString(1, o.getTitle());
             statement.setString(2, o.getSource());
             statement.setInt(3, o.getAuthor().getId());
+            statement.setLong(4, o.getDate());
             statement.execute();
 
         } catch (SQLException e) {
@@ -47,8 +55,9 @@ public class ArticleDao implements Dao<Article> {
 
             statement.setString(1, o.getTitle());
             statement.setString(2, o.getSource());
-            statement.setInt(3, o.getAuthor().getId());
-            statement.setInt(4, o.getId());
+            statement.setLong(3, o.getDate());
+            statement.setInt(4, o.getAuthor().getId());
+            statement.setInt(5, o.getId());
             statement.execute();
 
         } catch (SQLException e) {
@@ -81,8 +90,13 @@ public class ArticleDao implements Dao<Article> {
                 article.setId(result.getInt(1));
                 article.setTitle(result.getString(2));
                 article.setSource(result.getString(3));
-                //article.setDate(result.get);
-                //article.setAuthor();
+                article.setDate(result.getLong(4));
+                User user = new User();
+                user.setId(result.getInt(5));
+                user.setName(result.getString(6));
+                user.setIsActive(result.getBoolean(7));
+                user.setIsAdmin(result.getBoolean(8));
+                article.setAuthor(user);
                 list.add(article);
             }
 
@@ -94,6 +108,28 @@ public class ArticleDao implements Dao<Article> {
 
     @Override
     public Article getById(int id) {
-        return null;
+        Article article = new Article();
+        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+             PreparedStatement statement = conn.prepareStatement(GET_ARTICLE)) {
+
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                article.setId(result.getInt(1));
+                article.setTitle(result.getString(2));
+                article.setSource(result.getString(3));
+                article.setDate(result.getLong(4));
+                User user = new User();
+                user.setId(result.getInt(5));
+                user.setName(result.getString(6));
+                user.setIsActive(result.getBoolean(7));
+                user.setIsAdmin(result.getBoolean(8));
+                article.setAuthor(user);
+            }
+
+        } catch (SQLException e) {
+            logger.error("get ARTICLE sql exception", e);
+        }
+        return article;
     }
 }
