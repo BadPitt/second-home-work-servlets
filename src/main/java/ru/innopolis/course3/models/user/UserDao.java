@@ -1,13 +1,13 @@
-package ru.innopolis.course3;
+package ru.innopolis.course3.models.user;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.innopolis.course3.DBConnection;
+import ru.innopolis.course3.models.Dao;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static ru.innopolis.course3.Main.DATABASE_URL;
 
 /**
  * @author Danil Popov
@@ -16,21 +16,31 @@ public class UserDao implements Dao<User> {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDao.class);
 
-    private static final String ADD_USER = "INSERT INTO P_USER (NAME, PASSWORD, ROLE, " +
-            "IS_ACTIVE) VALUES (?, ?, ?, ?);";
-    private static final String UPDATE_USER = "UPDATE P_USER SET NAME=?, " +
-            "IS_ACTIVE=?, " +
-            "ROLE=?;";
-    private static final String CHANGE_PASSWORD = "UPDATE P_USER SET PASSWORD=?;";
+    private static final String ADD_USER = "INSERT INTO P_USER " +
+            " (NAME, PASSWORD, IS_ACTIVE, IS_ADMIN) " +
+            " VALUES (?, ?, ?, ?);";
+    private static final String UPDATE_USER = "UPDATE P_USER " +
+            " SET NAME=?, " +
+            " IS_ACTIVE=?, " +
+            " IS_ADMIN=?" +
+            " WHERE USER_ID=?;";
+    private static final String CHANGE_PASSWORD = "UPDATE P_USER " +
+            " SET PASSWORD=?" +
+            " WHERE USER_ID=?;";
     private static final String DELETE_USER = "DELETE FROM P_USER WHERE USER_ID=?;";
-    private static final String GET_ALL_USERS = "SELECT USER_ID, NAME, IS_ACTIVE, " +
-            "ROLE FROM P_USER";
-    private static final String GET_USER_BY_ID = "SELECT USER_ID, NAME, IS_ACTIVE, ROLE " +
-            "FROM P_USER WHERE USER_ID=?;";
+    private static final String GET_ALL_USERS = "SELECT " +
+            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD " +
+            " FROM P_USER";
+    private static final String GET_USER_BY_ID = "SELECT " +
+            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD " +
+            " FROM P_USER WHERE USER_ID=?;";
+    private static final String GET_USER_BY_NAME = "SELECT " +
+            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD " +
+            " FROM P_USER WHERE NAME=?;";
 
     @Override
     public void add(User o) {
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(ADD_USER)) {
 
             statement.setString(1, o.getName());
@@ -46,12 +56,13 @@ public class UserDao implements Dao<User> {
 
     @Override
     public void update(User o) {
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(UPDATE_USER)) {
 
             statement.setString(1, o.getName());
             statement.setBoolean(2, o.isAdmin());
             statement.setBoolean(3, o.isActive());
+            statement.setInt(4, o.getId());
             statement.execute();
 
         } catch (SQLException e) {
@@ -61,7 +72,7 @@ public class UserDao implements Dao<User> {
 
     @Override
     public void removeById(int id) {
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(DELETE_USER)) {
 
             statement.setInt(1, id);
@@ -75,7 +86,7 @@ public class UserDao implements Dao<User> {
     @Override
     public List<User> getAll() {
         List<User> list = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(GET_ALL_USERS)) {
 
             ResultSet result = statement.executeQuery();
@@ -85,6 +96,7 @@ public class UserDao implements Dao<User> {
                 user.setName(result.getString(2));
                 user.setIsActive(result.getBoolean(3));
                 user.setIsAdmin(result.getBoolean(4));
+                user.setPassword(result.getString(5));
                 list.add(user);
             }
 
@@ -97,7 +109,7 @@ public class UserDao implements Dao<User> {
     @Override
     public User getById(int id) {
         User user = new User();
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(GET_USER_BY_ID)) {
 
             statement.setInt(1, id);
@@ -107,10 +119,32 @@ public class UserDao implements Dao<User> {
                 user.setName(result.getString(2));
                 user.setIsActive(result.getBoolean(3));
                 user.setIsAdmin(result.getBoolean(4));
+                user.setPassword(result.getString(5));
             }
 
         } catch (SQLException e) {
-            logger.error("get all P_USER sql exception", e);
+            logger.error("get user by id P_USER sql exception", e);
+        }
+        return user;
+    }
+
+    public User getByName(String name) {
+        User user = new User();
+        try (Connection conn = DBConnection.getDbConnection();
+             PreparedStatement statement = conn.prepareStatement(GET_USER_BY_NAME)) {
+
+            statement.setString(1, name);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                user.setId(result.getInt(1));
+                user.setName(result.getString(2));
+                user.setIsActive(result.getBoolean(3));
+                user.setIsAdmin(result.getBoolean(4));
+                user.setPassword(result.getString(5));
+            }
+
+        } catch (SQLException e) {
+            logger.error("get user by name P_USER sql exception", e);
         }
         return user;
     }

@@ -1,4 +1,4 @@
-package ru.innopolis.course3;
+package ru.innopolis.course3.models;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +18,8 @@ public abstract class BaseModel {
         if (obj != null && this.getClass().getName().equals(obj.getClass().getName())) {
             try {
                 Field[] thisFields = this.getClass().getDeclaredFields();
-                boolean r = false;
+                boolean isFieldExists = false;
                 for (Field of : obj.getClass().getDeclaredFields()) {
-                    boolean isFieldExists = false;
                     for (Field tf : thisFields) {
                         if (tf.getName().equalsIgnoreCase(of.getName())) {
                             tf.setAccessible(true);
@@ -28,18 +27,17 @@ public abstract class BaseModel {
                             Object tfValue = tf.get(this);
                             Object ofValue = of.get(obj);
                             isFieldExists = (tfValue != null &&
-                                    ofValue != null
-                                    && tfValue.equals(ofValue)) ||
+                                    ofValue != null &&
+                                    tfValue.equals(ofValue)) ||
                                     (tfValue == null && ofValue == null);
                         }
                     }
                     if (!isFieldExists) {
+                        /* there are objects with different fields */
                         return false;
-                    } else {
-                        r = isFieldExists;
                     }
                 }
-                return r;
+                return isFieldExists;
             } catch (IllegalAccessException e) {
                 logger.error("BaseModel equals() exception", e);
                 return false;

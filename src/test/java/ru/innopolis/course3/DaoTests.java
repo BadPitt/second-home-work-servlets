@@ -1,14 +1,18 @@
 package ru.innopolis.course3;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+import ru.innopolis.course3.models.article.Article;
+import ru.innopolis.course3.models.article.ArticleDao;
+import ru.innopolis.course3.models.comment.Comment;
+import ru.innopolis.course3.models.comment.CommentDao;
+import ru.innopolis.course3.models.user.User;
+import ru.innopolis.course3.models.user.UserDao;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static ru.innopolis.course3.Main.*;
+import static ru.innopolis.course3.DBConnection.*;
 
 /**
  * Created by danil on 24/12/16.
@@ -18,6 +22,16 @@ public class DaoTests {
     private static UserDao userDao = new UserDao();
     private static ArticleDao articleDao = new ArticleDao();
     private static CommentDao commentDao = new CommentDao();
+
+    @BeforeClass
+    public static void setConnectionTest() {
+        DBConnection.isTest = true;
+    }
+
+    @AfterClass
+    public static void setConnectionAfterTest() {
+        DBConnection.isTest = false;
+    }
 
     @Before
     public void init() {
@@ -192,7 +206,7 @@ public class DaoTests {
         articleDao.add(article);
 
         Comment comment = new Comment();
-        comment.setCommentId(1);
+        comment.setId(1);
         comment.setSource("Test comment");
         comment.setDate(System.currentTimeMillis());
         comment.setArticleId(1);
@@ -215,7 +229,7 @@ public class DaoTests {
         articleDao.add(article);
 
         Comment comment = new Comment();
-        comment.setCommentId(1);
+        comment.setId(1);
         comment.setSource("Test comment");
         comment.setDate(System.currentTimeMillis());
         comment.setArticleId(1);
@@ -224,7 +238,7 @@ public class DaoTests {
 
         commentDao.removeById(1);
         Comment commentFromBd = commentDao.getById(1);
-        assertEquals(0, commentFromBd.getCommentId());
+        assertEquals(0, commentFromBd.getId());
     }
 
     @Test
@@ -239,7 +253,7 @@ public class DaoTests {
         articleDao.add(article);
 
         Comment comment = new Comment();
-        comment.setCommentId(1);
+        comment.setId(1);
         comment.setSource("Test comment");
         comment.setDate(System.currentTimeMillis());
         comment.setArticleId(1);
@@ -247,7 +261,7 @@ public class DaoTests {
         commentDao.add(comment);
 
         comment.setSource("Updated comment");
-        comment.setDate(System.currentTimeMillis() + 100l);
+        comment.setDate(System.currentTimeMillis() + 100L);
         user = new User();
         user.setId(2);
         userDao.add(user);
@@ -278,7 +292,7 @@ public class DaoTests {
             articleDao.add(article);
 
             Comment comment = new Comment();
-            comment.setCommentId(i);
+            comment.setId(i);
             comment.setSource("" + j);
             comment.setDate(System.currentTimeMillis());
             comment.setArticleId(i);

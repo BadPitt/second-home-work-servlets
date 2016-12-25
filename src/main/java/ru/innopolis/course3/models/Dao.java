@@ -1,4 +1,4 @@
-package ru.innopolis.course3;
+package ru.innopolis.course3.models;
 
 import java.util.List;
 

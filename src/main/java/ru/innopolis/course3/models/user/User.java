@@ -1,4 +1,6 @@
-package ru.innopolis.course3;
+package ru.innopolis.course3.models.user;
+
+import ru.innopolis.course3.models.BaseModel;
 
 /**
  * @author Danil Popov

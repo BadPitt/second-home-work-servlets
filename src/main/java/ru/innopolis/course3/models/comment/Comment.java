@@ -1,22 +1,25 @@
-package ru.innopolis.course3;
+package ru.innopolis.course3.models.comment;
+
+import ru.innopolis.course3.models.user.User;
+import ru.innopolis.course3.models.BaseModel;
 
 /**
  * Created by danil on 24/12/16.
  */
 public class Comment extends BaseModel {
 
-    private int commentId;
+    private int id;
     private String source;
     private long date;
     private User user;
     private int articleId;
 
-    public int getCommentId() {
-        return commentId;
+    public int getId() {
+        return id;
     }
 
-    public void setCommentId(int commentId) {
-        this.commentId = commentId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getSource() {

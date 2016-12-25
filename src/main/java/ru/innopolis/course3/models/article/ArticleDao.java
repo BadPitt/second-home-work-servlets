@@ -1,13 +1,14 @@
-package ru.innopolis.course3;
+package ru.innopolis.course3.models.article;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.innopolis.course3.DBConnection;
+import ru.innopolis.course3.models.Dao;
+import ru.innopolis.course3.models.user.User;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static ru.innopolis.course3.Main.DATABASE_URL;
 
 /**
  * @author Danil Popov
@@ -25,16 +26,16 @@ public class ArticleDao implements Dao<Article> {
     private static final String DELETE_ARTICLE = "DELETE FROM ARTICLE " +
             " WHERE ARTICLE_ID = ?;";
     private static final String GET_ALL_ARTICLE = "SELECT A.ARTICLE_ID, A.TITLE, A.SOURCE," +
-            "    A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.ROLE" +
+            "    A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.is_admin" +
             " FROM ARTICLE A join P_USER U on A.USER_ID=U.USER_ID;";
     private static final String GET_ARTICLE = "SELECT A.ARTICLE_ID, A.TITLE, A.SOURCE," +
-            "    A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.ROLE" +
+            "    A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.is_admin" +
             " FROM ARTICLE A join P_USER U on A.USER_ID=U.USER_ID " +
             " WHERE A.ARTICLE_ID = ?;";
 
     @Override
     public void add(Article o) {
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(ADD_ARTICLE)) {
 
             statement.setString(1, o.getTitle());
@@ -50,7 +51,7 @@ public class ArticleDao implements Dao<Article> {
 
     @Override
     public void update(Article o) {
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(UPDATE_ARTICLE)) {
 
             statement.setString(1, o.getTitle());
@@ -67,7 +68,7 @@ public class ArticleDao implements Dao<Article> {
 
     @Override
     public void removeById(int id) {
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(DELETE_ARTICLE)) {
 
             statement.setInt(1, id);
@@ -81,7 +82,7 @@ public class ArticleDao implements Dao<Article> {
     @Override
     public List<Article> getAll() {
         List<Article> list = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(GET_ALL_ARTICLE)) {
 
             ResultSet result = statement.executeQuery();
@@ -109,7 +110,7 @@ public class ArticleDao implements Dao<Article> {
     @Override
     public Article getById(int id) {
         Article article = new Article();
-        try (Connection conn = DriverManager.getConnection(DATABASE_URL);
+        try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(GET_ARTICLE)) {
 
             statement.setInt(1, id);

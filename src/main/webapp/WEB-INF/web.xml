@@ -4,30 +4,40 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-    <!--<servlet>
-        <servlet-name>MainServlet</servlet-name>
-        <servlet-class>ru.innopolis.course3.MainServlet</servlet-class>
+    <servlet>
+        <servlet-name>users</servlet-name>
+        <servlet-class>ru.innopolis.course3.servlets.UserServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>MainServlet</servlet-name>
-        <url-pattern>/home</url-pattern>
+        <servlet-name>users</servlet-name>
+        <url-pattern>/users</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>StudentServlet</servlet-name>
-        <servlet-class>ru.innopolis.course3.StudentServlet</servlet-class>
+        <servlet-name>home</servlet-name>
+        <servlet-class>ru.innopolis.course3.servlets.HomeServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>StudentServlet</servlet-name>
-        <url-pattern>/student</url-pattern>
+        <servlet-name>home</servlet-name>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>LectureServlet</servlet-name>
-        <servlet-class>ru.innopolis.course3.LectureServlet</servlet-class>
+        <servlet-name>auth</servlet-name>
+        <servlet-class>ru.innopolis.course3.servlets.AuthServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>LectureServlet</servlet-name>
-        <url-pattern>/lecture</url-pattern>
-    </servlet-mapping>-->
+        <servlet-name>auth</servlet-name>
+        <url-pattern>/auth</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>articles</servlet-name>
+        <servlet-class>ru.innopolis.course3.servlets.ArticlesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>articles</servlet-name>
+        <url-pattern>/articles</url-pattern>
+    </servlet-mapping>
+
 </web-app>
