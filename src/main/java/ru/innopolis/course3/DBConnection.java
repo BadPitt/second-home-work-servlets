@@ -24,6 +24,12 @@ public class DBConnection {
         }
     }
 
+    public static void main(String[] args) {
+        createUserTable();
+        createArticleTable();
+        createCommentTable();
+    }
+
     public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/publishingis?user=postgres&password=postgres";
     public static final String DATABASE_URL_TEST = "jdbc:postgresql://localhost:5432/publishingis_test?user=postgres&password=postgres";
 

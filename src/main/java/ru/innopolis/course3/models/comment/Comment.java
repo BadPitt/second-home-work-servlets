@@ -2,6 +2,7 @@ package ru.innopolis.course3.models.comment;
 
 import ru.innopolis.course3.models.user.User;
 import ru.innopolis.course3.models.BaseModel;
+import ru.innopolis.course3.utils.Utils;
 
 /**
  * Created by danil on 24/12/16.
@@ -52,5 +53,9 @@ public class Comment extends BaseModel {
 
     public void setArticleId(int articleId) {
         this.articleId = articleId;
+    }
+
+    public String getFormattedDate() {
+        return Utils.getFormattedDate(date);
     }
 }

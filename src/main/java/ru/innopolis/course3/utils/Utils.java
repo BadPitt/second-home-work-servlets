@@ -7,6 +7,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by danil on 25/12/16.
@@ -42,4 +43,8 @@ public final class Utils {
         return hash;
     }
 
+    public static String getFormattedDate(long l) {
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYY/MM/dd, HH:MM");
+        return sdf.format(l);
+    }
 }

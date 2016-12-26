@@ -13,8 +13,8 @@ public class CommentService {
         commentDao.add(comment);
     }
 
-    public static void removeComment(Comment comment) {
-        commentDao.removeById(comment.getId());
+    public static void removeCommentById(int id) {
+        commentDao.removeById(id);
     }
 
     public static void updateComment(Comment comment) {

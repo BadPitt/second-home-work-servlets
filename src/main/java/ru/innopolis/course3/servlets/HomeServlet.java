@@ -28,10 +28,19 @@ public class HomeServlet extends HttpServlet {
             getServletContext().getRequestDispatcher("/users").forward(req, resp);
         } else if ("login".equals(button)) {
             getServletContext().getRequestDispatcher("/auth").forward(req, resp);
+        } else if ("logout".equals(button)) {
+            handleLogout(req);
+            getServletContext().getRequestDispatcher("/index.jsp").forward(req, resp);
         } else if ("show_articles".equals(button)) {
             getServletContext().getRequestDispatcher("/articles").forward(req, resp);
         } else {
             getServletContext().getRequestDispatcher("/index.jsp").forward(req, resp);
         }
+    }
+
+    private void handleLogout(HttpServletRequest req) {
+        req.getSession().removeAttribute("login_id");
+        req.getSession().removeAttribute("is_admin");
+        req.getSession().removeAttribute("is_active");
     }
 }

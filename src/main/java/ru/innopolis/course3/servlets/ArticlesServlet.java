@@ -53,10 +53,45 @@ public class ArticlesServlet extends HttpServlet {
             setArticle(req);
             setCommentsForArticle(req);
             getServletContext().getRequestDispatcher("/articles/view_more_article.jsp").forward(req, resp);
+        } else if ("edit_comment".equals(button)) {
+            setArticle(req);
+            setCommentForEdit(req);
+            getServletContext().getRequestDispatcher("/articles/view_more_article.jsp").forward(req, resp);
+        } else if ("confirm_edit_comment".equals(button)) {
+            handleEditComment(req);
+            setArticle(req);
+            setCommentsForArticle(req);
+            getServletContext().getRequestDispatcher("/articles/view_more_article.jsp").forward(req, resp);
+        }  else if ("delete_comment".equals(button)) {
+            handleDeleteComment(req);
+            setArticle(req);
+            setCommentsForArticle(req);
+            getServletContext().getRequestDispatcher("/articles/view_more_article.jsp").forward(req, resp);
         } else {
             setAllArticles(req);
             getServletContext().getRequestDispatcher("/articles/articles.jsp").forward(req, resp);
         }
+    }
+
+    private void handleDeleteComment(HttpServletRequest req) {
+        CommentService.removeCommentById(
+                Integer.parseInt(req.getParameter("comment_id"))
+        );
+    }
+
+    private void handleEditComment(HttpServletRequest req) {
+        Comment comment = new Comment();
+        comment.setId(Integer.parseInt(req.getParameter("comment_id")));
+        comment.setSource(req.getParameter("comment_source"));
+        comment.setDate(System.currentTimeMillis());
+        comment.setArticleId(Integer.parseInt(req.getParameter("article_id")));
+        comment.setUser(UserService.getUserByName(req.getParameter("user_name")));
+        CommentService.updateComment(comment);
+    }
+
+    private void setCommentForEdit(HttpServletRequest req) {
+        setCommentsForArticle(req);
+        req.setAttribute("edit_comment_id", req.getParameter("comment_id"));
     }
 
     private void handleSendComment(HttpServletRequest req) {
