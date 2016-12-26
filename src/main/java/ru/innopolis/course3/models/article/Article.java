@@ -5,6 +5,9 @@ import ru.innopolis.course3.models.user.User;
 import ru.innopolis.course3.utils.Utils;
 
 /**
+ * POJO for article entity
+ *
+ * @see BaseModel
  * @author Danil Popov
  */
 public class Article extends BaseModel {
@@ -55,6 +58,11 @@ public class Article extends BaseModel {
         this.date = date;
     }
 
+    /**
+     *
+     * @return {@code String} which represent
+     *          formatted article's date
+     */
     public String getFormattedDate() {
         return Utils.getFormattedDate(date);
     }

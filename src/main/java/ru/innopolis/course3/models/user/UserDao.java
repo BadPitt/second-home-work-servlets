@@ -10,7 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * DAO for user entity
+ *
  * @author Danil Popov
+ * @see Dao
+ * @see User
  */
 public class UserDao implements Dao<User> {
 
@@ -38,6 +42,10 @@ public class UserDao implements Dao<User> {
             " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD " +
             " FROM P_USER WHERE NAME=?;";
 
+    /**
+     * @see Dao#add(Object)
+     * @param o User which will add
+     */
     @Override
     public void add(User o) {
         try (Connection conn = DBConnection.getDbConnection();
@@ -54,6 +62,10 @@ public class UserDao implements Dao<User> {
         }
     }
 
+    /**
+     * @see Dao#update(Object)
+     * @param o User which will update
+     */
     @Override
     public void update(User o) {
         try (Connection conn = DBConnection.getDbConnection();
@@ -70,6 +82,10 @@ public class UserDao implements Dao<User> {
         }
     }
 
+    /**
+     * @see Dao#removeById(int)
+     * @param id User's id for removing from DB User with this id
+     */
     @Override
     public void removeById(int id) {
         try (Connection conn = DBConnection.getDbConnection();
@@ -83,6 +99,10 @@ public class UserDao implements Dao<User> {
         }
     }
 
+    /**
+     * @see Dao#getAll()
+     * @return {@code List<User>} which contains all Users from DB
+     */
     @Override
     public List<User> getAll() {
         List<User> list = new ArrayList<>();
@@ -106,6 +126,11 @@ public class UserDao implements Dao<User> {
         return list;
     }
 
+    /**
+     * @see Dao#getById(int)
+     * @param id
+     * @return User with current id
+     */
     @Override
     public User getById(int id) {
         User user = new User();
@@ -128,6 +153,12 @@ public class UserDao implements Dao<User> {
         return user;
     }
 
+    /**
+     * finds User by name
+     *
+     * @param name
+     * @return {@code User}
+     */
     public User getByName(String name) {
         User user = new User();
         try (Connection conn = DBConnection.getDbConnection();

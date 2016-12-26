@@ -6,13 +6,20 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 
 /**
- * Created by danil on 24/12/16.
+ * Base class for all POJO classes with overridden
+ * methods {@code equals(Object obj)}
+ * and {@code hashCode()}
  */
 public abstract class BaseModel {
 
     private static Logger logger = LoggerFactory.getLogger(BaseModel.class);
 
-    // TODO: refactor it
+    /**
+     *
+     * @param   obj
+     * @return  true if both objects have same fields
+     *          with same values
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj != null && this.getClass().getName().equals(obj.getClass().getName())) {
@@ -47,6 +54,11 @@ public abstract class BaseModel {
         }
     }
 
+    /**
+     * Bloch's hash code for all fields in {@code this}
+     *
+     * @return {@code int} hash code for current object
+     */
     @Override
     public int hashCode() {
         int hash = 37;

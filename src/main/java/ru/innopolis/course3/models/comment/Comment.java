@@ -5,7 +5,10 @@ import ru.innopolis.course3.models.BaseModel;
 import ru.innopolis.course3.utils.Utils;
 
 /**
- * Created by danil on 24/12/16.
+ * POJO for comment entity
+ *
+ * @see BaseModel
+ * @author Danil Popov
  */
 public class Comment extends BaseModel {
 
@@ -55,6 +58,11 @@ public class Comment extends BaseModel {
         this.articleId = articleId;
     }
 
+    /**
+     *
+     * @return {@code String} which represent
+     *          formatted comment's date
+     */
     public String getFormattedDate() {
         return Utils.getFormattedDate(date);
     }

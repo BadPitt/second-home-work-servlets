@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * DAO for article entity
+ *
  * @author Danil Popov
+ * @see Dao
+ * @see Article
  */
 public class ArticleDao implements Dao<Article> {
 
@@ -33,6 +37,10 @@ public class ArticleDao implements Dao<Article> {
             " FROM ARTICLE A join P_USER U on A.USER_ID=U.USER_ID " +
             " WHERE A.ARTICLE_ID = ?;";
 
+    /**
+     * @see Dao#add(Object)
+     * @param o Article which will add
+     */
     @Override
     public void add(Article o) {
         try (Connection conn = DBConnection.getDbConnection();
@@ -49,6 +57,10 @@ public class ArticleDao implements Dao<Article> {
         }
     }
 
+    /**
+     * @see Dao#update(Object)
+     * @param o Article which will update
+     */
     @Override
     public void update(Article o) {
         try (Connection conn = DBConnection.getDbConnection();
@@ -66,6 +78,10 @@ public class ArticleDao implements Dao<Article> {
         }
     }
 
+    /**
+     * @see Dao#removeById(int)
+     * @param id Article's id for removing from DB User with this id
+     */
     @Override
     public void removeById(int id) {
         try (Connection conn = DBConnection.getDbConnection();
@@ -79,6 +95,10 @@ public class ArticleDao implements Dao<Article> {
         }
     }
 
+    /**
+     * @see Dao#getAll()
+     * @return {@code List<Article>} which contains all Articles from DB
+     */
     @Override
     public List<Article> getAll() {
         List<Article> list = new ArrayList<>();
@@ -107,6 +127,11 @@ public class ArticleDao implements Dao<Article> {
         return list;
     }
 
+    /**
+     * @see Dao#getById(int)
+     * @param id
+     * @return Article with current id
+     */
     @Override
     public Article getById(int id) {
         Article article = new Article();

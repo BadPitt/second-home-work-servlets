@@ -10,12 +10,21 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 
 /**
- * Created by danil on 25/12/16.
+ * Class for working with utils
+ *
+ * @author Danil Popov
  */
 public final class Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
+    /**
+     * Compares hash from DB with user password
+     *
+     * @param userPass user's password
+     * @param hashFromBd user's password
+     * @return true if user password's hash and hash from DB are equal
+     */
     public static boolean isPassEquals(String userPass, String hashFromBd) {
         boolean isEquals = false;
         try {
@@ -29,6 +38,12 @@ public final class Utils {
         return isEquals;
     }
 
+    /**
+     * Gets hash from pass
+     *
+     * @param pass user's password
+     * @return {@code String} password's hash
+     */
     public static String getPassHash(String pass) {
         String hash = null;
 
@@ -43,6 +58,12 @@ public final class Utils {
         return hash;
     }
 
+    /**
+     * Formats date from {@code long} to {@code String}
+     *
+     * @param l {@code long date}
+     * @return formatted {@code String date}
+     */
     public static String getFormattedDate(long l) {
         SimpleDateFormat sdf = new SimpleDateFormat("YYYY/MM/dd, HH:MM");
         return sdf.format(l);

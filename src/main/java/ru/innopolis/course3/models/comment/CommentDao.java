@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by danil on 24/12/16.
+ * DAO for comment entity
+ *
+ * @author Danil Popov
+ * @see Dao
+ * @see Comment
  */
 public class CommentDao implements Dao<Comment> {
 
@@ -37,6 +41,10 @@ public class CommentDao implements Dao<Comment> {
             " FROM COMMENT C join P_USER U on C.USER_ID=U.USER_ID" +
             " WHERE C.ARTICLE_ID=?;";
 
+    /**
+     * @see Dao#add(Object)
+     * @param o Comment which will add
+     */
     @Override
     public void add(Comment o) {
         try (Connection conn = DBConnection.getDbConnection();
@@ -53,6 +61,10 @@ public class CommentDao implements Dao<Comment> {
         }
     }
 
+    /**
+     * @see Dao#update(Object)
+     * @param o Comment which will update
+     */
     @Override
     public void update(Comment o) {
         try (Connection conn = DBConnection.getDbConnection();
@@ -70,6 +82,10 @@ public class CommentDao implements Dao<Comment> {
         }
     }
 
+    /**
+     * @see Dao#removeById(int)
+     * @param id Comments's id for removing from DB Comment with this id
+     */
     @Override
     public void removeById(int id) {
         try (Connection conn = DBConnection.getDbConnection();
@@ -83,6 +99,10 @@ public class CommentDao implements Dao<Comment> {
         }
     }
 
+    /**
+     * @see Dao#getAll()
+     * @return {@code List<Comment>} which contains all Comment from DB
+     */
     @Override
     public List<Comment> getAll() {
         List<Comment> list = new ArrayList<>();
@@ -111,6 +131,11 @@ public class CommentDao implements Dao<Comment> {
         return list;
     }
 
+    /**
+     * @see Dao#getById(int)
+     * @param id
+     * @return Comment with current id
+     */
     @Override
     public Comment getById(int id) {
         Comment comment = new Comment();
@@ -138,6 +163,12 @@ public class CommentDao implements Dao<Comment> {
         return comment;
     }
 
+    /**
+     * Gets all comment for current article
+     *
+     * @param id article's id
+     * @return {@code List<Comment>}
+     */
     public List<Comment> getByArticleId(int id) {
         List<Comment> list = new ArrayList<>();
         try (Connection conn = DBConnection.getDbConnection();

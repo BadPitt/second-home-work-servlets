@@ -3,6 +3,9 @@ package ru.innopolis.course3.models.user;
 import ru.innopolis.course3.models.BaseModel;
 
 /**
+ * POJO for user entity
+ *
+ * @see BaseModel
  * @author Danil Popov
  */
 public class User extends BaseModel {

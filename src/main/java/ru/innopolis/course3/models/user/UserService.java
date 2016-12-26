@@ -3,7 +3,8 @@ package ru.innopolis.course3.models.user;
 import java.util.List;
 
 /**
- * Created by danil on 25/12/16.
+ * Service for handling User data
+ * @author Danil Popov
  */
 public class UserService {
 

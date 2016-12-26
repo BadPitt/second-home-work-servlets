@@ -3,7 +3,9 @@ package ru.innopolis.course3.models.article;
 import java.util.List;
 
 /**
- * Created by danil on 25/12/16.
+ * Service for handling article data
+ *
+ * @author Danil Popov
  */
 public class ArticleService {
 

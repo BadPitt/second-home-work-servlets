@@ -3,7 +3,9 @@ package ru.innopolis.course3.models.comment;
 import java.util.List;
 
 /**
- * Created by danil on 25/12/16.
+ * Service for handling comment data
+ *
+ * @author Danil Popov
  */
 public class CommentService {
 
