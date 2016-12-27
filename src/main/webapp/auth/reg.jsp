@@ -6,8 +6,9 @@
     <title>Registration</title>
 </head>
 <body>
+<div id="body_content">
 <form action="${pageContext.request.contextPath}/auth" method="post">
-    <table>
+    <table id="users_table">
         <th>NAME</th>
         <th>PASSWORD</th>
         <tr>
@@ -25,5 +26,6 @@
         </tr>
     </table>
 </form>
+</div>
 </body>
 </html>

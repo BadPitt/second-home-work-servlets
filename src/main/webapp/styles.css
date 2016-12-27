@@ -14,7 +14,7 @@
     background: 50%;
 }
 
-#header_log_button {
+#header_button {
     float: right;
     margin-top: 15px;
     margin-right: 20px;
@@ -24,10 +24,27 @@
     border-bottom: solid 1px #aaa;
 }
 
+#header_blocked_message {
+    display: inherit;
+    text-align: center;
+    padding-top: 15px;
+    color: rgba(255, 19, 28, 0.75);
+}
+
 #article_title {
+    width: 100%;
     text-align: center;
     font-weight: bold;
     font-size: 20px;
+}
+
+#users_table {
+    display: inline;
+}
+
+#body_content {
+    display: block;
+    text-align: center;
 }
 
 body {

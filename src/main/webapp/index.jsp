@@ -8,21 +8,20 @@
 </head>
 <body>
 <%@include file='header_template.jsp'%>
-<form action="${pageContext.request.contextPath}/home" method="post">
+<div id="body_content">
     <p>
         <t1>Choose action</t1>
     </p>
-    <c:if test="${not empty sessionScope.login_id and sessionScope.is_admin}">
-        <p>
-            <button type="submit" name="button" value="show_users">Users</button>
-        </p>
-    </c:if>
+<form action="${pageContext.request.contextPath}/auth" method="post">
     <p>
         <button type="submit" name="button" value="login">Login</button>
     </p>
+</form>
+<form action="${pageContext.request.contextPath}/articles" method="post">
     <p>
         <button type="submit" name="button" value="show_articles">Articles</button>
     </p>
 </form>
+</div>
 </body>
 </html>

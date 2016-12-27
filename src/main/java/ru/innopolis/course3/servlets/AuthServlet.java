@@ -14,7 +14,7 @@ import static ru.innopolis.course3.utils.Utils.getPassHash;
 import static ru.innopolis.course3.utils.Utils.isPassEquals;
 
 /**
- * Created by danil on 25/12/16.
+ * @author Danil Popov
  */
 public class AuthServlet extends HttpServlet {
 

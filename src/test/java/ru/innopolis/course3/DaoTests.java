@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static ru.innopolis.course3.DBConnection.*;
 
 /**
- * Created by danil on 24/12/16.
+ * @author Danil Popov
  */
 public class DaoTests {
 

@@ -9,7 +9,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Created by danil on 25/12/16.
+ * Class for creating tables in DB
+ * and getting connections;
+ * If flag {@code isTest} equals true it means
+ * that user want work with Test-DB, otherwise
+ * connection will establish with Working-DB
+ *
+ * @author Danil Popov
  */
 public class DBConnection {
 
@@ -64,10 +70,21 @@ public class DBConnection {
     private static final String DROP_USER_TABLE = "DROP TABLE P_USER;";
     private static final String DROP_COMMENT_TABLE = "DROP TABLE COMMENT;";
 
+    /**
+     * Gets connection with DB or TestDB
+     * according {@code isTest} flag
+     *
+     * @return {@code Connection} with DB
+     * @throws SQLException
+     */
     public static Connection getDbConnection() throws SQLException {
         return DriverManager.getConnection(isTest ? DATABASE_URL_TEST : DATABASE_URL);
     }
 
+    /**
+     * creates P_USER table in DB
+     * @see DBConnection#CREATE_USER_TABLE
+     */
     public static void createUserTable() {
         try (Connection connection = getDbConnection();
              Statement statement = connection.createStatement()) {
@@ -79,6 +96,10 @@ public class DBConnection {
         }
     }
 
+    /**
+     * creates ARTICLE table in DB
+     * @see DBConnection#CREATE_ARTICLE_TABLE
+     */
     public static void createArticleTable() {
         try (Connection conn = getDbConnection();
              Statement statement = conn.createStatement()) {
@@ -90,6 +111,26 @@ public class DBConnection {
         }
     }
 
+
+    /**
+     * creates COMMENT table in DB
+     * @see DBConnection#CREATE_COMMENT_TABLE
+     */
+    public static void createCommentTable() {
+        try (Connection conn = getDbConnection();
+             Statement statement = conn.createStatement()) {
+
+            statement.execute(CREATE_COMMENT_TABLE);
+
+        } catch (SQLException e) {
+            logger.error("create COMMENT table sql exception", e);
+        }
+    }
+
+    /**
+     * drops ARTICLE table in DB
+     * @see DBConnection#DROP_ARTICLE_TABLE
+     */
     public static void dropArticleTable() {
         try (Connection conn = getDbConnection();
              Statement statement = conn.createStatement()) {
@@ -101,6 +142,10 @@ public class DBConnection {
         }
     }
 
+    /**
+     * drops COMMENT table in DB
+     * @see DBConnection#DROP_COMMENT_TABLE
+     */
     public static void dropCommentTable() {
         try (Connection conn = getDbConnection();
              Statement statement = conn.createStatement()) {
@@ -112,6 +157,10 @@ public class DBConnection {
         }
     }
 
+    /**
+     * drops USER table in DB
+     * @see DBConnection#DROP_USER_TABLE
+     */
     public static void dropUserTable() {
         try (Connection conn = getDbConnection();
              Statement statement = conn.createStatement()) {
@@ -120,17 +169,6 @@ public class DBConnection {
 
         } catch (SQLException e) {
             logger.error("drop USER table sql exception", e);
-        }
-    }
-
-    public static void createCommentTable() {
-        try (Connection conn = getDbConnection();
-             Statement statement = conn.createStatement()) {
-
-            statement.execute(CREATE_COMMENT_TABLE);
-
-        } catch (SQLException e) {
-            logger.error("create COMMENT table sql exception", e);
         }
     }
 }

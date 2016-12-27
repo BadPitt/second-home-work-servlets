@@ -8,8 +8,10 @@
 </head>
 <body>
 <c:if test="${not empty sessionScope.login_id and sessionScope.is_admin}">
+    <%@include file='/header_template.jsp'%>
+<div id="body_content">
     <form action="${pageContext.request.contextPath}/users" method="post">
-        <table>
+        <table id="users_table">
             <th>NAME</th>
             <th>IS USER ADMIN</th>
             <th>IS USER ACTIVE</th>
@@ -32,6 +34,7 @@
         </table>
         <input name="user_id" type="hidden" value="${user.getId()}">
     </form>
+</div>
 </c:if>
 </body>
 </html>

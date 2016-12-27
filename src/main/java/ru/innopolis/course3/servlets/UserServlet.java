@@ -12,7 +12,7 @@ import java.io.IOException;
 import static ru.innopolis.course3.utils.Utils.getPassHash;
 
 /**
- * Created by danil on 25/12/16.
+ * @author Danil Popov
  */
 public class UserServlet extends HttpServlet {
 

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by danil on 25/12/16.
+ * @author Danil Popov
  */
 public class HomeServlet extends HttpServlet {
 
