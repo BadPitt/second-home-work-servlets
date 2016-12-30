@@ -9,7 +9,7 @@
 <body>
 <%@include file='/header_template.jsp'%>
 <c:forEach var="article" items="${articles}">
-    <form action="${pageContext.request.contextPath}/articles" method="post">
+    <form action="${pageContext.request.contextPath}/articles_servlet" method="post">
         <table id="article_table">
             <tr>
                 <td id="article_title">${article.getTitle()}</td>
@@ -34,13 +34,14 @@
                 </c:if>
                 <td>
                     <input type="hidden" name="article_id" value="${article.getId()}">
+                    <input type="hidden" name="article_update_date" value="${article.getUpdateDate()}">
                 </td>
             </tr>
         </table>
     </form>
 </c:forEach>
 <c:if test="${not empty sessionScope.login_id and sessionScope.is_active}">
-<form action="${pageContext.request.contextPath}/articles" method="post">
+<form action="${pageContext.request.contextPath}/articles_servlet" method="post">
     <button type="submit" name="button" value="add_article">Write article</button>
 </form>
 </c:if>

@@ -9,7 +9,7 @@
 <body>
 <c:if test="${not empty sessionScope.login_id and sessionScope.is_active}">
     <%@include file='/header_template.jsp'%>
-    <form action="${pageContext.request.contextPath}/articles" method="post">
+    <form action="${pageContext.request.contextPath}/articles_servlet" method="post">
         <table>
             <th>
                 <input type="text" name="article_title" value="${article.getTitle()}">
@@ -26,6 +26,8 @@
                 <td>
                     <input type="hidden" name="article_id" value="${article.getId()}">
                     <input type="hidden" name="article_user_id" value="${article.getAuthor().getId()}">
+                    <input type="hidden" name="article_date" value="${article.getDate()}">
+                    <input type="hidden" name="article_update_date" value="${article.getUpdateDate()}">
                 </td>
             </tr>
         </table>

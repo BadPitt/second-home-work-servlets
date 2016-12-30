@@ -17,6 +17,7 @@ public class Comment extends BaseModel {
     private long date;
     private User user;
     private int articleId;
+    private long updateDate;
 
     public int getId() {
         return id;
@@ -65,5 +66,13 @@ public class Comment extends BaseModel {
      */
     public String getFormattedDate() {
         return Utils.getFormattedDate(date);
+    }
+
+    public long getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(long updateDate) {
+        this.updateDate = updateDate;
     }
 }

@@ -42,25 +42,32 @@ public class DBConnection {
     public static boolean isTest = false;
 
     private static final String CREATE_USER_TABLE = "CREATE TABLE P_USER" +
-            "(USER_ID SERIAL NOT NULL PRIMARY KEY," +
-            " NAME TEXT UNIQUE," +
+            "(" +
+            " USER_ID SERIAL NOT NULL PRIMARY KEY," +
+            " NAME TEXT UNIQUE NOT NULL," +
             " PASSWORD TEXT," +
             " IS_ACTIVE BOOLEAN," +
-            " IS_ADMIN BOOLEAN);";
+            " IS_ADMIN BOOLEAN," +
+            " VERSION BIGINT" +
+            " );";
     private static final String CREATE_ARTICLE_TABLE = "CREATE TABLE ARTICLE" +
-            "(ARTICLE_ID SERIAL NOT NULL PRIMARY KEY," +
+            "(" +
+            " ARTICLE_ID SERIAL NOT NULL PRIMARY KEY," +
             " TITLE TEXT," +
             " SOURCE TEXT," +
             " DATE BIGINT," +
-            " USER_ID INTEGER" +
+            " USER_ID INTEGER," +
+            " UPDATE_DATE BIGINT" +
             " CONSTRAINT article_p_user_user_id_fk\n" +
-            " REFERENCES P_USER (USER_ID) ON DELETE CASCADE ON UPDATE CASCADE);";
+            " REFERENCES P_USER (USER_ID) ON DELETE CASCADE ON UPDATE CASCADE" +
+            " );";
     private static final String CREATE_COMMENT_TABLE = "CREATE TABLE COMMENT (" +
             "  COMMENT_ID SERIAL PRIMARY KEY NOT NULL," +
             "  SOURCE TEXT," +
             "  DATE BIGINT," +
             "  ARTICLE_ID INTEGER," +
             "  USER_ID INTEGER," +
+            "  UPDATE_DATE BIGINT," +
             "  FOREIGN KEY (USER_ID) REFERENCES P_USER (USER_ID)" +
             "  MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE," +
             "  FOREIGN KEY (ARTICLE_ID) REFERENCES ARTICLE (ARTICLE_ID)" +

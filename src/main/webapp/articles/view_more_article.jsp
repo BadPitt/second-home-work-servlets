@@ -8,7 +8,7 @@
 </head>
 <body>
 <%@include file='/header_template.jsp'%>
-<form action="${pageContext.request.contextPath}/articles" method="post">
+<form action="${pageContext.request.contextPath}/articles_servlet" method="post">
     <table id="article_table">
         <tr>
             <td id="article_title">${article.getTitle()}</td>
@@ -35,7 +35,7 @@
     </table>
 </form>
 <c:forEach var="comment" items="${comments}">
-<form action="${pageContext.request.contextPath}/articles" method="post">
+<form action="${pageContext.request.contextPath}/articles_servlet" method="post">
     <table>
         <tr>
             <td>user: ${comment.getUser().getName()} date: ${comment.getFormattedDate()}</td>
@@ -70,6 +70,8 @@
             <td>
                 <input type="hidden" name="article_id" value="${article.getId()}">
                 <input type="hidden" name="comment_id" value="${comment.getId()}">
+                <input type="hidden" name="comment_date" value="${comment.getDate()}">
+                <input type="hidden" name="comment_update_date" value="${comment.getUpdateDate()}">
                 <input type="hidden" name="user_name" value="${sessionScope.login_id}">
             </td>
         </tr>
@@ -78,7 +80,7 @@
 </form>
 </c:forEach>
 <c:if test="${not empty sessionScope.login_id and sessionScope.is_active}">
-<form action="${pageContext.request.contextPath}/articles" method="post">
+<form action="${pageContext.request.contextPath}/articles_servlet" method="post">
     <table>
         <tr>
             <td><input type="text" name="comment_source" value=""></td>

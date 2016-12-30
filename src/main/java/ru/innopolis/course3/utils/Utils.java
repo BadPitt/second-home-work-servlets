@@ -65,7 +65,7 @@ public final class Utils {
      * @return formatted {@code String date}
      */
     public static String getFormattedDate(long l) {
-        SimpleDateFormat sdf = new SimpleDateFormat("YYYY/MM/dd, HH:MM");
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYY/MM/dd, HH:mm");
         return sdf.format(l);
     }
 }

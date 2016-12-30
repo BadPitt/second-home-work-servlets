@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <section id="section_header">
-    <form action="${pageContext.request.contextPath}/home" method="post">
+    <form action="${pageContext.request.contextPath}/auth_servlet" method="post">
         <c:choose>
             <c:when test="${not empty sessionScope.login_id}">
                 <button id="header_button" type="submit" name="button" value="logout">Logout</button>
@@ -9,6 +9,8 @@
                 <button id="header_button" type="submit" name="button" value="login">Login</button>
             </c:otherwise>
         </c:choose>
+    </form>
+    <form action="${pageContext.request.contextPath}/users_servlet" method="post">
         <c:if test="${not empty sessionScope.login_id and sessionScope.is_admin}">
             <button id="header_button" type="submit" name="button" value="show_users">Users</button>
         </c:if>

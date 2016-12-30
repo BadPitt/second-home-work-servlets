@@ -15,6 +15,7 @@ public class User extends BaseModel {
     private String password;
     private boolean isAdmin;
     private boolean isActive;
+    private long version;
 
     public int getId() {
         return id;
@@ -54,5 +55,13 @@ public class User extends BaseModel {
 
     public void setIsActive(boolean active) {
         isActive = active;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 }

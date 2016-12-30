@@ -17,6 +17,7 @@ public class Article extends BaseModel {
     private String source;
     private User author;
     private long date;
+    private long updateDate;
 
     public int getId() {
         return id;
@@ -65,5 +66,13 @@ public class Article extends BaseModel {
      */
     public String getFormattedDate() {
         return Utils.getFormattedDate(date);
+    }
+
+    public long getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(long updateDate) {
+        this.updateDate = updateDate;
     }
 }

@@ -16,7 +16,7 @@
         <th>IS USER ADMIN</th>
         <th>IS USER ACTIVE</th>
         <c:forEach var="user" items="${users}">
-            <form action="${pageContext.request.contextPath}/users" method="post">
+            <form action="${pageContext.request.contextPath}/users_servlet" method="post">
                 <tr>
                     <td>${user.getId()}</td>
                     <td>${user.getName()}</td>
@@ -24,16 +24,16 @@
                     <td>${user.isActive()}</td>
                     <td>
                         <button type="submit" name="button" value="edit_user">Edit</button>
-                        <input type="hidden" name="user_id" value="${user.getId()}">
                     </td>
                     <td>
                         <button type="submit" name="button" value="delete_user">Delete</button>
-                        <input type="hidden" name="user_id" value="${user.getId()}">
                     </td>
+                    <input type="hidden" name="user_id" value="${user.getId()}">
+                    <input type="hidden" name="user_version" value="${user.getVersion()}">
                 </tr>
             </form>
         </c:forEach>
-        <form action="${pageContext.request.contextPath}/users" method="post">
+        <form action="${pageContext.request.contextPath}/users_servlet" method="post">
             <tr>
                 <td>
                     <button name="button" type="submit" value="add_user">Add new user</button>

@@ -9,7 +9,7 @@
 <body>
 <c:if test="${not empty sessionScope.login_id and sessionScope.is_active}">
     <%@include file='/header_template.jsp'%>
-    <form action="${pageContext.request.contextPath}/articles" method="post">
+    <form action="${pageContext.request.contextPath}/articles_servlet" method="post">
         <table id="article_table">
             <tr>
                 <th>

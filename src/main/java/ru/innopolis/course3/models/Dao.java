@@ -13,7 +13,7 @@ public interface Dao<T> {
      * Add new instance of entity to DB
      * @param o instance of entity
      */
-    void add(T o);
+    void add(T o) throws DBException;
 
     /**
      * Gets fields values from {@code T o} and then
@@ -21,7 +21,7 @@ public interface Dao<T> {
      *
      * @param o instance of entity
      */
-    void update(T o);
+    void update(T o) throws DBException;
 
     /**
      * Remove row from DB where ID equals
@@ -29,14 +29,14 @@ public interface Dao<T> {
      *
      * @param id instance's of entity id
      */
-    void removeById(int id);
+    void removeById(int id, long version) throws DBException;
 
     /**
      * Gets all of entities instances
      *
      * @return {@code List<T>}
      */
-    List<T> getAll();
+    List<T> getAll() throws DBException;
 
     /**
      * Gets instance of entity with ID equals
@@ -45,5 +45,5 @@ public interface Dao<T> {
      * @param id
      * @return {@code T} instance of entity
      */
-    T getById(int id);
+    T getById(int id) throws DBException;
 }

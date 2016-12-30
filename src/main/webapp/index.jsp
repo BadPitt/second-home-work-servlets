@@ -12,12 +12,12 @@
     <p>
         <t1>Choose action</t1>
     </p>
-<form action="${pageContext.request.contextPath}/auth" method="post">
+<form action="${pageContext.request.contextPath}/auth_servlet" method="post">
     <p>
         <button type="submit" name="button" value="login">Login</button>
     </p>
 </form>
-<form action="${pageContext.request.contextPath}/articles" method="post">
+<form action="${pageContext.request.contextPath}/articles_servlet" method="post">
     <p>
         <button type="submit" name="button" value="show_articles">Articles</button>
     </p>

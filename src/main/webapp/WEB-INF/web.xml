@@ -10,7 +10,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>users</servlet-name>
-        <url-pattern>/users</url-pattern>
+        <url-pattern>/users_servlet</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -28,7 +28,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>auth</servlet-name>
-        <url-pattern>/auth</url-pattern>
+        <url-pattern>/auth_servlet</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -37,7 +37,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>articles</servlet-name>
-        <url-pattern>/articles</url-pattern>
+        <url-pattern>/articles_servlet</url-pattern>
     </servlet-mapping>
 
     <filter>

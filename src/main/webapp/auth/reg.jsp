@@ -7,7 +7,7 @@
 </head>
 <body>
 <div id="body_content">
-<form action="${pageContext.request.contextPath}/auth" method="post">
+<form action="${pageContext.request.contextPath}/auth_servlet" method="post">
     <table id="users_table">
         <th>NAME</th>
         <th>PASSWORD</th>
