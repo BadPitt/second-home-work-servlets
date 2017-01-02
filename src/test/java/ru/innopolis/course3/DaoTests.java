@@ -1,6 +1,7 @@
 package ru.innopolis.course3;
 
 import org.junit.*;
+import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.article.Article;
 import ru.innopolis.course3.models.article.ArticleDao;
 import ru.innopolis.course3.models.comment.Comment;
@@ -48,7 +49,7 @@ public class DaoTests {
     }
 
     @Test
-    public void userAddGet() {
+    public void userAddGet() throws DBException {
         User user = new User();
         user.setId(1);
         user.setName("Mikola");
@@ -61,22 +62,23 @@ public class DaoTests {
     }
 
     @Test
-    public void userRemove() {
+    public void userRemove() throws DBException {
         User user = new User();
         user.setId(1);
         user.setName("Mikola");
         user.setIsActive(true);
         user.setIsAdmin(true);
+        user.setVersion(1);
         userDao.add(user);
 
-        userDao.removeById(1);
+        userDao.removeById(1, 1);
 
         User userFromBd = userDao.getById(1);
         assertEquals(0, userFromBd.getId());
     }
 
     @Test
-    public void userUpdate() {
+    public void userUpdate() throws DBException {
         User user = new User();
         user.setId(1);
         user.setName("Mikola");
@@ -90,11 +92,12 @@ public class DaoTests {
         userDao.update(user);
 
         User updatedUser = userDao.getById(1);
+        user.setVersion(1);
         assertEquals(user, updatedUser);
     }
 
     @Test
-    public void userGetAll() {
+    public void userGetAll() throws DBException {
         List<User> users = new ArrayList<>();
         for (char c = 'a', b = 1; c < 'd'; c++, b++) {
             User user = new User();
@@ -110,16 +113,21 @@ public class DaoTests {
     }
 
     @Test
-    public void articleAddGet() {
+    public void articleAddGet() throws DBException {
+        long date = System.currentTimeMillis();
+
         User user = new User();
         user.setId(1);
+        user.setName("Mikola");
+        user.setVersion(10);
         userDao.add(user);
 
         Article article = new Article();
         article.setId(1);
         article.setTitle("Test title");
         article.setSource("Loren ipsum dolore");
-        article.setDate(System.currentTimeMillis());
+        article.setDate(date);
+        article.setUpdateDate(date);
         article.setAuthor(user);
         articleDao.add(article);
 
@@ -128,42 +136,48 @@ public class DaoTests {
     }
 
     @Test
-    public void articleRemove() {
+    public void articleRemove() throws DBException {
+        long date = System.currentTimeMillis();
         User user = new User();
         user.setId(1);
+        user.setName("Mikola");
         userDao.add(user);
 
         Article article = new Article();
         article.setId(1);
         article.setTitle("Test title");
         article.setSource("Loren ipsum dolore");
-        article.setDate(System.currentTimeMillis());
+        article.setDate(date);
         article.setAuthor(user);
+        article.setUpdateDate(date);
         articleDao.add(article);
 
-        articleDao.removeById(1);
+        articleDao.removeById(1, date);
 
         Article articleFromBd = articleDao.getById(1);
         assertEquals(0, articleFromBd.getId());
     }
 
     @Test
-    public void articleUpdate() {
+    public void articleUpdate() throws DBException {
+        long date = System.currentTimeMillis();
+
         User user = new User();
         user.setId(1);
+        user.setName("Mikola");
         userDao.add(user);
 
         Article article = new Article();
         article.setId(1);
         article.setTitle("Test title");
         article.setSource("Loren ipsum dolore");
-        article.setDate(System.currentTimeMillis());
+        article.setDate(date);
         article.setAuthor(user);
         articleDao.add(article);
 
         article.setTitle("updated title");
         article.setSource("updated source");
-        article.setDate(System.currentTimeMillis() + 100L);
+        article.setDate(date + 100L);
         articleDao.update(article);
 
         Article articleFromDb = articleDao.getById(1);
@@ -171,11 +185,12 @@ public class DaoTests {
     }
 
     @Test
-    public void articleGetAll() {
+    public void articleGetAll() throws DBException {
         List<Article> articles = new ArrayList<>();
         for (char i = 'a', j = 1; i < 'e'; i++, j++) {
             User user = new User();
             user.setId(j);
+            user.setName(String.valueOf(i));
             userDao.add(user);
 
             Article article = new Article();
@@ -195,20 +210,27 @@ public class DaoTests {
     }
 
     @Test
-    public void commentAddGet() {
+    public void commentAddGet() throws DBException {
+        long date = System.currentTimeMillis();
+
         User user = new User();
         user.setId(1);
+        user.setName("Mikola");
+        user.setVersion(0);
         userDao.add(user);
 
         Article article = new Article();
         article.setId(1);
         article.setAuthor(user);
+        article.setDate(date);
+        article.setUpdateDate(date);
         articleDao.add(article);
 
         Comment comment = new Comment();
         comment.setId(1);
         comment.setSource("Test comment");
-        comment.setDate(System.currentTimeMillis());
+        comment.setDate(date);
+        comment.setUpdateDate(date);
         comment.setArticleId(1);
         comment.setUser(user);
         commentDao.add(comment);
@@ -218,9 +240,11 @@ public class DaoTests {
     }
 
     @Test
-    public void commentRemove() {
+    public void commentRemove() throws DBException {
+        long date = System.currentTimeMillis();
         User user = new User();
         user.setId(1);
+        user.setName("Mikola");
         userDao.add(user);
 
         Article article = new Article();
@@ -231,20 +255,22 @@ public class DaoTests {
         Comment comment = new Comment();
         comment.setId(1);
         comment.setSource("Test comment");
-        comment.setDate(System.currentTimeMillis());
+        comment.setDate(date);
+        comment.setUpdateDate(date);
         comment.setArticleId(1);
         comment.setUser(user);
         commentDao.add(comment);
 
-        commentDao.removeById(1);
+        commentDao.removeById(1, date);
         Comment commentFromBd = commentDao.getById(1);
         assertEquals(0, commentFromBd.getId());
     }
 
     @Test
-    public void commentUpdate() {
+    public void commentUpdate() throws DBException {
         User user = new User();
         user.setId(1);
+        user.setName("Mikola");
         userDao.add(user);
 
         Article article = new Article();
@@ -264,6 +290,7 @@ public class DaoTests {
         comment.setDate(System.currentTimeMillis() + 100L);
         user = new User();
         user.setId(2);
+        user.setName("Henry");
         userDao.add(user);
         comment.setUser(user);
         article = new Article();
@@ -279,11 +306,12 @@ public class DaoTests {
     }
 
     @Test
-    public void commentGetAll() {
+    public void commentGetAll() throws DBException {
         List<Comment> comments = new ArrayList<>();
         for (char i = 1, j = 'a'; j < 'e'; j++, i++) {
             User user = new User();
             user.setId(i);
+            user.setName(String.valueOf(j));
             userDao.add(user);
 
             Article article = new Article();

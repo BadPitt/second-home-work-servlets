@@ -7,8 +7,7 @@
     <title>Add new user</title>
 </head>
 <body>
-<c:if test="${not empty sessionScope.login_id and sessionScope.is_admin}">
-    <%@include file='/header_template.jsp'%>
+<%@include file='/header_template.jsp'%>
 <div id="body_content">
     <form action="${pageContext.request.contextPath}/users_servlet" method="post">
         <table id="users_table">
@@ -38,6 +37,5 @@
         </table>
     </form>
 </div>
-</c:if>
 </body>
 </html>

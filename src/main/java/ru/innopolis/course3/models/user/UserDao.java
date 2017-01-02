@@ -52,6 +52,7 @@ public class UserDao implements Dao<User> {
      */
     @Override
     public void add(User o) throws DBException {
+        precondition(o);
         try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(ADD_USER)) {
 
@@ -75,6 +76,7 @@ public class UserDao implements Dao<User> {
      */
     @Override
     public void update(User o) throws DBException {
+        precondition(o);
         try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(UPDATE_USER)) {
 
@@ -103,7 +105,7 @@ public class UserDao implements Dao<User> {
              PreparedStatement statement = conn.prepareStatement(DELETE_USER)) {
 
             statement.setInt(1, id);
-            statement.setLong(2, id);
+            statement.setLong(2, version);
             statement.execute();
 
         } catch (SQLException e) {
@@ -199,5 +201,12 @@ public class UserDao implements Dao<User> {
             throw new DBException();
         }
         return user;
+    }
+
+    private void precondition(User o) throws DBException {
+        if (o == null) {
+            logger.error("USER null object exception");
+            throw new DBException();
+        }
     }
 }

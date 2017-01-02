@@ -16,6 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class ArticleServletHandler extends ServletHandler {
 
     public static ArticleServletHandler newHandler(String code) {
+        if (code == null) {
+            code = "";
+        }
         switch (code) {
             case "add_article":
                 return new AddArticleHandler();

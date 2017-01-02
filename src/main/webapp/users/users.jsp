@@ -7,8 +7,7 @@
     <title>Users</title>
 </head>
 <body>
-<c:if test="${not empty sessionScope.login_id and sessionScope.is_admin}">
-    <%@include file='/header_template.jsp'%>
+<%@include file='/header_template.jsp'%>
 <div id="body_content">
     <table id="users_table">
         <th>ID</th>
@@ -42,6 +41,5 @@
         </form>
     </table>
 </div>
-</c:if>
 </body>
 </html>

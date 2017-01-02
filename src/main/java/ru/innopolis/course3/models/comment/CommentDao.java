@@ -51,6 +51,7 @@ public class CommentDao implements Dao<Comment> {
      */
     @Override
     public void add(Comment o) throws DBException {
+        precondition(o);
         try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(ADD_COMMENT)) {
 
@@ -73,16 +74,19 @@ public class CommentDao implements Dao<Comment> {
      */
     @Override
     public void update(Comment o) throws DBException {
+        precondition(o);
         try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(UPDATE_COMMENT)) {
+            long oldUpdateDate = o.getUpdateDate();
+            o.setUpdateDate(System.currentTimeMillis());
 
             statement.setString(1, o.getSource());
             statement.setLong(2, o.getDate());
             statement.setInt(3, o.getArticleId());
             statement.setInt(4, o.getUser().getId());
-            statement.setLong(5, System.currentTimeMillis());
+            statement.setLong(5, o.getUpdateDate());
             statement.setInt(6, o.getId());
-            statement.setLong(7, o.getUpdateDate());
+            statement.setLong(7, oldUpdateDate);
             statement.execute();
 
         } catch (SQLException e) {
@@ -212,5 +216,20 @@ public class CommentDao implements Dao<Comment> {
             throw new DBException();
         }
         return list;
+    }
+
+    private void precondition(Comment o) throws DBException {
+        if (o == null) {
+            logger.error("COMMENT null object exception");
+            throw new DBException();
+        } else if (o.getDate() == 0 && o.getUpdateDate() == 0) {
+            long date = System.currentTimeMillis();
+            o.setDate(date);
+            o.setUpdateDate(date);
+        } else if (o.getDate() == 0 || o.getUpdateDate() == 0) {
+            long date = o.getDate() | o.getUpdateDate();
+            o.setDate(date);
+            o.setUpdateDate(date);
+        }
     }
 }

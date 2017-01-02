@@ -32,11 +32,11 @@ public class ArticleDao implements Dao<Article> {
             " WHERE ARTICLE_ID = ? AND UPDATE_DATE=?;";
     private static final String GET_ALL_ARTICLE = "SELECT " +
             " A.ARTICLE_ID, A.TITLE, A.SOURCE," +
-            " A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.IS_ADMIN, A.UPDATE_DATE" +
+            " A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.IS_ADMIN, U.VERSION, A.UPDATE_DATE" +
             " FROM ARTICLE A join P_USER U on A.USER_ID=U.USER_ID;";
     private static final String GET_ARTICLE = "SELECT " +
             " A.ARTICLE_ID, A.TITLE, A.SOURCE," +
-            " A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.IS_ADMIN, A.UPDATE_DATE" +
+            " A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.IS_ADMIN, U.VERSION, A.UPDATE_DATE" +
             " FROM ARTICLE A join P_USER U on A.USER_ID=U.USER_ID " +
             " WHERE A.ARTICLE_ID = ?;";
 
@@ -46,6 +46,7 @@ public class ArticleDao implements Dao<Article> {
      */
     @Override
     public void add(Article o) throws DBException {
+        precondition(o);
         try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(ADD_ARTICLE)) {
 
@@ -68,16 +69,19 @@ public class ArticleDao implements Dao<Article> {
      */
     @Override
     public void update(Article o) throws DBException {
+        precondition(o);
         try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement statement = conn.prepareStatement(UPDATE_ARTICLE)) {
+            long oldUpdateDate = o.getUpdateDate();
+            o.setUpdateDate(System.currentTimeMillis());
 
             statement.setString(1, o.getTitle());
             statement.setString(2, o.getSource());
             statement.setLong(3, o.getDate());
             statement.setInt(4, o.getAuthor().getId());
-            statement.setLong(5, System.currentTimeMillis());
+            statement.setLong(5, o.getUpdateDate());
             statement.setInt(6, o.getId());
-            statement.setLong(7, o.getUpdateDate());
+            statement.setLong(7, oldUpdateDate);
             statement.execute();
 
         } catch (SQLException e) {
@@ -127,8 +131,9 @@ public class ArticleDao implements Dao<Article> {
                 user.setName(result.getString(6));
                 user.setIsActive(result.getBoolean(7));
                 user.setIsAdmin(result.getBoolean(8));
+                user.setVersion(result.getLong(9));
                 article.setAuthor(user);
-                article.setUpdateDate(result.getLong(9));
+                article.setUpdateDate(result.getLong(10));
                 list.add(article);
             }
 
@@ -162,8 +167,9 @@ public class ArticleDao implements Dao<Article> {
                 user.setName(result.getString(6));
                 user.setIsActive(result.getBoolean(7));
                 user.setIsAdmin(result.getBoolean(8));
+                user.setVersion(result.getLong(9));
                 article.setAuthor(user);
-                article.setUpdateDate(result.getLong(9));
+                article.setUpdateDate(result.getLong(10));
             }
 
         } catch (SQLException e) {
@@ -171,5 +177,20 @@ public class ArticleDao implements Dao<Article> {
             throw new DBException();
         }
         return article;
+    }
+
+    private void precondition(Article o) throws DBException {
+        if (o == null) {
+            logger.error("ARTICLE null object exception");
+            throw new DBException();
+        } else if (o.getDate() == 0 && o.getUpdateDate() == 0) {
+            long date = System.currentTimeMillis();
+            o.setDate(date);
+            o.setUpdateDate(date);
+        } else if (o.getDate() == 0 || o.getUpdateDate() == 0) {
+            long date = o.getDate() | o.getUpdateDate();
+            o.setDate(date);
+            o.setUpdateDate(date);
+        }
     }
 }

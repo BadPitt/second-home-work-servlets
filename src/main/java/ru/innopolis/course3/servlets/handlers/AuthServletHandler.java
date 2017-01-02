@@ -17,6 +17,9 @@ import static ru.innopolis.course3.utils.Utils.isPassEquals;
 public abstract class AuthServletHandler extends ServletHandler {
 
     public static AuthServletHandler newHandler(String code) {
+        if (code == null) {
+            code = "";
+        }
         switch (code) {
             case "reg":
                 return new RegistrationAuthHandler();
@@ -37,11 +40,14 @@ public abstract class AuthServletHandler extends ServletHandler {
         user.setName(req.getParameter("user_name"));
         user.setPassword(getPassHash(req.getParameter("user_password")));
         user.setIsActive(true);
+
         // TODO: handle errors
         UserService.addNewUser(user);
-        session.setAttribute("login_id", user.getName());
-        session.setAttribute("is_admin", false);
-        session.setAttribute("is_active", true);
+
+            session.setAttribute("login_id", user.getName());
+            session.setAttribute("is_admin", false);
+            session.setAttribute("is_active", true);
+
 
         return true;
     }

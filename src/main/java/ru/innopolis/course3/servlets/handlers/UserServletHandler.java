@@ -15,6 +15,9 @@ import static ru.innopolis.course3.utils.Utils.getPassHash;
 public abstract class UserServletHandler extends ServletHandler {
 
     public static UserServletHandler newHandler(String code) {
+        if (code == null) {
+            code = "";
+        }
         switch (code) {
             case "show_users":
                 return new ShowUsersHandler();

@@ -2,14 +2,15 @@ package ru.innopolis.course3.servlets;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Danil Popov
+ * Created by danil on 31/12/16.
  */
-public class BlockedFilter implements Filter{
+public class AuthFilter implements Filter {
 
     private List<String> excludeUrls = new ArrayList<>();
 
@@ -24,22 +25,20 @@ public class BlockedFilter implements Filter{
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
         HttpServletRequest req = (HttpServletRequest) request;
-        boolean active = true;
+        HttpSession session = req.getSession();
         String url = req.getServletPath();
-        if (excludeUrls.contains(url)) {
+
+        Object loginIdObject = session.getAttribute("login_id");
+        Object isAdminObject = session.getAttribute("is_admin");
+
+        String login = loginIdObject == null ? null : (String) loginIdObject;
+        boolean isAdmin = isAdminObject == null ? false : (Boolean) isAdminObject;
+
+        if (excludeUrls.contains(url) || (login != null && isAdmin)) {
             chain.doFilter(request, response);
-            return;
-        }
-        Object attr = req.getSession().getAttribute("is_active");
-        if (attr != null) {
-            active = (Boolean)attr;
-        }
-        if (!active) {
-            req.getRequestDispatcher("/index.jsp").forward(request, response);
         } else {
-            chain.doFilter(request, response);
+            req.getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
         }
     }
 
