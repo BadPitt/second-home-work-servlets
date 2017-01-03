@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.innopolis.course3.DBConnection;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.Dao;
+import ru.innopolis.course3.utils.Utils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,8 +23,8 @@ public class UserDao implements Dao<User> {
     private static final Logger logger = LoggerFactory.getLogger(UserDao.class);
 
     private static final String ADD_USER = "INSERT INTO P_USER " +
-            " (NAME, PASSWORD, IS_ACTIVE, IS_ADMIN, VERSION) " +
-            " VALUES (?, ?, ?, ?, ?);";
+            " (NAME, PASSWORD, SALT, IS_ACTIVE, IS_ADMIN, VERSION) " +
+            " VALUES (?, ?, ?, ?, ?, ?);";
     private static final String UPDATE_USER = "UPDATE P_USER " +
             " SET NAME=?, " +
             " IS_ACTIVE=?, " +
@@ -31,18 +32,18 @@ public class UserDao implements Dao<User> {
             " VERSION=?" +
             " WHERE USER_ID=? AND VERSION=?;";
     private static final String CHANGE_PASSWORD = "UPDATE P_USER " +
-            " SET PASSWORD=?" +
-            " WHERE USER_ID=?;";
+            " SET PASSWORD=?, SALT=?, VERSION=?" +
+            " WHERE USER_ID=? AND VERSION=?;";
     private static final String DELETE_USER = "DELETE FROM P_USER " +
             "WHERE USER_ID=? AND VERSION=?;";
     private static final String GET_ALL_USERS = "SELECT " +
-            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD, VERSION " +
+            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD, SALT, VERSION " +
             " FROM P_USER";
     private static final String GET_USER_BY_ID = "SELECT " +
-            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD, VERSION " +
+            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD, SALT, VERSION " +
             " FROM P_USER WHERE USER_ID=?;";
     private static final String GET_USER_BY_NAME = "SELECT " +
-            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD, VERSION " +
+            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD, SALT, VERSION " +
             " FROM P_USER WHERE NAME=?;";
 
     /**
@@ -58,9 +59,10 @@ public class UserDao implements Dao<User> {
 
             statement.setString(1, o.getName());
             statement.setString(2, o.getPassword());
-            statement.setBoolean(3, o.isActive());
-            statement.setBoolean(4, o.isAdmin());
-            statement.setLong(5, o.getVersion());
+            statement.setString(3, o.getSalt());
+            statement.setBoolean(4, o.isActive());
+            statement.setBoolean(5, o.isAdmin());
+            statement.setLong(6, o.getVersion());
             statement.execute();
 
         } catch (SQLException e) {
@@ -86,6 +88,8 @@ public class UserDao implements Dao<User> {
             statement.setLong(4, o.getVersion() + 1);
             statement.setInt(5, o.getId());
             statement.setLong(6, o.getVersion());
+
+            o.setVersion(o.getVersion() + 1);
             statement.execute();
 
         } catch (SQLException e) {
@@ -133,7 +137,8 @@ public class UserDao implements Dao<User> {
                 user.setIsActive(result.getBoolean(3));
                 user.setIsAdmin(result.getBoolean(4));
                 user.setPassword(result.getString(5));
-                user.setVersion(result.getLong(6));
+                user.setSalt(result.getString(6));
+                user.setVersion(result.getLong(7));
                 list.add(user);
             }
 
@@ -164,7 +169,8 @@ public class UserDao implements Dao<User> {
                 user.setIsActive(result.getBoolean(3));
                 user.setIsAdmin(result.getBoolean(4));
                 user.setPassword(result.getString(5));
-                user.setVersion(result.getLong(6));
+                user.setSalt(result.getString(6));
+                user.setVersion(result.getLong(7));
             }
 
         } catch (SQLException e) {
@@ -193,7 +199,8 @@ public class UserDao implements Dao<User> {
                 user.setIsActive(result.getBoolean(3));
                 user.setIsAdmin(result.getBoolean(4));
                 user.setPassword(result.getString(5));
-                user.setVersion(result.getLong(6));
+                user.setSalt(result.getString(6));
+                user.setVersion(result.getLong(7));
             }
 
         } catch (SQLException e) {
@@ -201,6 +208,36 @@ public class UserDao implements Dao<User> {
             throw new DBException();
         }
         return user;
+    }
+
+    /**
+     * Changes user's password's hash and salt
+     *
+     * @param password      user's password
+     * @param user          user
+     * @throws DBException  exception throws when
+     *                      something goes wrong
+     */
+    public void changePassword(String password, User user) throws DBException {
+        try (Connection conn = DBConnection.getDbConnection();
+        PreparedStatement statement = conn.prepareStatement(CHANGE_PASSWORD)) {
+
+            String[] hashAndSaltArray = Utils.getHashAndSaltArray(password);
+
+            statement.setString(1, hashAndSaltArray[0]);
+            statement.setString(2, hashAndSaltArray[1]);
+            statement.setLong(3, user.getVersion() + 1);
+            statement.setInt(4, user.getId());
+            statement.setLong(5, user.getVersion());
+
+            user.setVersion(user.getVersion() + 1);
+
+            statement.execute();
+
+        } catch (SQLException e) {
+            logger.error("change password P_USER sql exception", e);
+            throw new DBException();
+        }
     }
 
     private void precondition(User o) throws DBException {

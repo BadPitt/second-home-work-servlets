@@ -13,6 +13,7 @@ public class User extends BaseModel {
     private int id;
     private String name;
     private String password;
+    private String salt;
     private boolean isAdmin;
     private boolean isActive;
     private long version;
@@ -63,5 +64,13 @@ public class User extends BaseModel {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

@@ -7,7 +7,10 @@ import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class for working with utils
@@ -22,40 +25,58 @@ public final class Utils {
      * Compares hash from DB with user password
      *
      * @param userPass user's password
-     * @param hashFromBd user's password
+     * @param hashAndSaltFromDb {@code String[]} user's password hash and salt from DB
      * @return true if user password's hash and hash from DB are equal
      */
-    public static boolean isPassEquals(String userPass, String hashFromBd) {
-        boolean isEquals = false;
+    public static boolean isPassEquals(String userPass, String[] hashAndSaltFromDb) {
+        String userHash = null;
+        String salt = hashAndSaltFromDb[1];
+
         try {
-            MessageDigest userDigest = MessageDigest.getInstance("SHA-256");
-            byte[] userBytes = userDigest.digest(userPass.getBytes(StandardCharsets.UTF_8));
-            String userHash = DatatypeConverter.printHexBinary(userBytes);
-            isEquals = userHash.equals(hashFromBd);
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = digest.digest(userPass.getBytes(StandardCharsets.UTF_8));
+            userHash = DatatypeConverter.printHexBinary(bytes); /* obtaining hashed pass */
+
+            bytes = digest.digest((userHash + salt).getBytes(StandardCharsets.UTF_8));
+            userHash = DatatypeConverter.printHexBinary(bytes); /* obtaining salted hash */
         } catch (NoSuchAlgorithmException e) {
             logger.error("there isn\'t crypto algorithm", e);
         }
-        return isEquals;
+
+        return hashAndSaltFromDb[0].equals(userHash);
     }
 
     /**
-     * Gets hash from pass
+     * Gets hash and salt from pass
      *
      * @param pass user's password
-     * @return {@code String} password's hash
+     * @return {@code String[]} which contains password's hash
+     *          {@code String[0]} and salt {@code String[1]}
      */
-    public static String getPassHash(String pass) {
+    public static String[] getHashAndSaltArray(String pass) {
         String hash = null;
+        String salt = null;
+        String[] hashAndSalt = new String[2];
 
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] bytes = digest.digest(pass.getBytes(StandardCharsets.UTF_8));
-            hash = DatatypeConverter.printHexBinary(bytes);
+            hash = DatatypeConverter.printHexBinary(bytes); /* obtaining hashed pass */
+
+            SecureRandom random = new SecureRandom();
+            byte[] saltBytes = random.generateSeed(32);
+            salt = DatatypeConverter.printHexBinary(saltBytes);
+
+            bytes = digest.digest((hash + salt).getBytes(StandardCharsets.UTF_8));
+            hash = DatatypeConverter.printHexBinary(bytes); /* obtaining salted hash */
         } catch (NoSuchAlgorithmException e) {
             logger.error("there isn\'t crypto algorithm", e);
         }
 
-        return hash;
+        hashAndSalt[0] = hash;
+        hashAndSalt[1] = salt;
+
+        return hashAndSalt;
     }
 
     /**

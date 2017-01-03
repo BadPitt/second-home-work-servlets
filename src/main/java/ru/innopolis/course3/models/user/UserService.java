@@ -35,4 +35,8 @@ public class UserService {
     public static List<User> getAllUsers() throws DBException {
         return userDao.getAll();
     }
+
+    public static void changeUsersPassword(String pass, User user) throws DBException {
+        userDao.changePassword(pass, user);
+    }
 }

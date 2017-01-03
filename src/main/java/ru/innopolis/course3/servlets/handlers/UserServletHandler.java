@@ -7,7 +7,7 @@ import ru.innopolis.course3.models.user.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static ru.innopolis.course3.utils.Utils.getPassHash;
+import static ru.innopolis.course3.utils.Utils.getHashAndSaltArray;
 
 /**
  * @author Danil Popov
@@ -44,18 +44,28 @@ public abstract class UserServletHandler extends ServletHandler {
 
     void updateUser(HttpServletRequest req) throws DBException {
         User user = new User();
-        user.setId(Integer.parseInt(req.getParameter("user_id")));
+        int id = Integer.parseInt(req.getParameter("user_id"));
+        long version = Long.parseLong(req.getParameter("user_version"));
+
+        user.setId(id);
         user.setName(req.getParameter("user_name"));
         user.setIsAdmin(Boolean.parseBoolean(req.getParameter("user_is_admin")));
         user.setIsActive(Boolean.parseBoolean(req.getParameter("user_is_active")));
-        user.setVersion(Long.parseLong(req.getParameter("user_version")));
+        user.setVersion(version);
         UserService.updateUser(user);
+
+        String password = req.getParameter("user_password");
+        if (password != null && !password.isEmpty()) {
+            UserService.changeUsersPassword(password, user);
+        }
     }
 
     void addNewUser(HttpServletRequest req) throws DBException {
         User user = new User();
         user.setName(req.getParameter("user_name"));
-        user.setPassword(getPassHash(req.getParameter("user_password")));
+        String[] hashAndSalt = getHashAndSaltArray(req.getParameter("user_password"));
+        user.setPassword(hashAndSalt[0]);
+        user.setSalt(hashAndSalt[1]);
         user.setIsAdmin(Boolean.parseBoolean(req.getParameter("user_is_admin")));
         user.setIsActive(Boolean.parseBoolean(req.getParameter("user_is_active")));
         UserService.addNewUser(user);

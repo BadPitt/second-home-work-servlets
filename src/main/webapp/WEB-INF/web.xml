@@ -19,7 +19,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>home</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/home</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -62,7 +62,7 @@
         </filter-class>
         <init-param>
             <param-name>exclude_urls</param-name>
-            <param-value>/home,/auth_servlet,/articles_servlet</param-value>
+            <param-value>/home,/auth_servlet,/articles_servlet,/styles.css,/styles/material.min.js,/styles/material.min.js.map,/styles/material.min.css,/styles/material.min.css.map</param-value>
         </init-param>
     </filter>
     <filter-mapping>

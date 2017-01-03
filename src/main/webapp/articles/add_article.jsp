@@ -3,7 +3,9 @@
 <html>
 <head>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <style type="text/css"><%@include file='/styles.css'%></style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>New article</title>
 </head>
 <body>
@@ -29,5 +31,6 @@
         </table>
     </form>
 </c:if>
+<script type="text/javascript" src="${pageContext.request.contextPath}/styles/material.min.js"></script>
 </body>
 </html>

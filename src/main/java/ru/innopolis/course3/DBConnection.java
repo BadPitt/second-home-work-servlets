@@ -49,6 +49,7 @@ public class DBConnection {
             " USER_ID SERIAL NOT NULL PRIMARY KEY," +
             " NAME TEXT UNIQUE NOT NULL," +
             " PASSWORD TEXT," +
+            " SALT TEXT," +
             " IS_ACTIVE BOOLEAN," +
             " IS_ADMIN BOOLEAN," +
             " VERSION BIGINT" +
@@ -89,19 +90,6 @@ public class DBConnection {
      */
     public static Connection getDbConnection() throws SQLException {
         return dbConnection.getConnection();
-        /*Connection conn = null;
-
-        try {
-            InitialContext initContext = new InitialContext();
-            Context envContext = (Context)initContext.lookup("java:comp/env");
-            // fixme: to put right name!
-            DataSource ds = (DataSource) envContext.lookup(isTest ? DATABASE_URL_TEST : DATABASE_URL);
-            conn = ds.getConnection();
-        } catch (NamingException e) {
-            logger.error("get connection naming exception", e);
-        }
-        return conn;*/
-        //return DriverManager.getConnection(isTest ? DATABASE_URL_TEST : DATABASE_URL);
     }
 
     private Connection getConnection() throws SQLException {

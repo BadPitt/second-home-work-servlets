@@ -2,7 +2,6 @@ package ru.innopolis.course3;
 
 import org.junit.Test;
 import ru.innopolis.course3.utils.Utils;
-
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -16,11 +15,15 @@ public class UtilsTests {
         String pass2 = new String("weakPass");
         String pass3 = "str0ng!*P@ssw0rd";
 
-        String hash1 = Utils.getPassHash(pass1);
-        String hash2 = Utils.getPassHash(pass2);
-        String hash3 = Utils.getPassHash(pass3);
+        String[] hashAndSalt1 = Utils.getHashAndSaltArray(pass1);
+        String[] hashAndSalt2 = Utils.getHashAndSaltArray(pass2);
+        String[] hashAndSalt3 = Utils.getHashAndSaltArray(pass3);
 
-        assertTrue(hash1.equals(hash2));
+        String hash1 = hashAndSalt1[0];
+        String hash2 = hashAndSalt2[0];
+        String hash3 = hashAndSalt3[0];
+
+        assertTrue(!hash1.equals(hash2));
         assertTrue(!hash1.equals(hash3));
     }
 
@@ -31,13 +34,13 @@ public class UtilsTests {
         String pass2 = new String("weakPass");
         String pass3 = "str0ng!*P@ssw0rd";
 
-        String hash1 = Utils.getPassHash(pass1);
-        String hash2 = Utils.getPassHash(pass2);
-        String hash3 = Utils.getPassHash(pass3);
+        String[] hashAndSalt1 = Utils.getHashAndSaltArray(pass1);
+        String[] hashAndSalt2 = Utils.getHashAndSaltArray(pass2);
+        String[] hashAndSalt3 = Utils.getHashAndSaltArray(pass3);
 
-        assertTrue(Utils.isPassEquals(pass1, hash1));
-        assertTrue(Utils.isPassEquals(pass1, hash2));
-        assertTrue(!Utils.isPassEquals(pass3, hash2));
+        assertTrue(Utils.isPassEquals(pass1, hashAndSalt1));
+        assertTrue(Utils.isPassEquals(pass1, hashAndSalt2));
+        assertTrue(!Utils.isPassEquals(pass3, hashAndSalt2));
     }
 
     @Test

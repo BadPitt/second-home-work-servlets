@@ -3,7 +3,9 @@
 <html>
 <head>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <style type="text/css"><%@include file='styles.css'%></style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>Publishing IS</title>
 </head>
 <body>
@@ -14,14 +16,25 @@
     </p>
 <form action="${pageContext.request.contextPath}/auth_servlet" method="post">
     <p>
-        <button type="submit" name="button" value="login">Login</button>
+        <button type="submit"
+                name="button"
+                value="login"
+                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            Login
+        </button>
     </p>
 </form>
 <form action="${pageContext.request.contextPath}/articles_servlet" method="post">
     <p>
-        <button type="submit" name="button" value="show_articles">Articles</button>
+        <button type="submit"
+                name="button"
+                value="show_articles"
+                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            Articles
+        </button>
     </p>
 </form>
 </div>
+<script type="text/javascript" src="${pageContext.request.contextPath}/styles/material.min.js"></script>
 </body>
 </html>

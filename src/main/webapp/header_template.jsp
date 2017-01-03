@@ -3,16 +3,43 @@
     <form action="${pageContext.request.contextPath}/auth_servlet" method="post">
         <c:choose>
             <c:when test="${not empty sessionScope.login_id}">
-                <button id="header_button" type="submit" name="button" value="logout">Logout</button>
+                <button id="header_button"
+                        type="submit"
+                        name="button"
+                        value="logout"
+                        class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                    Logout
+                </button>
             </c:when>
             <c:otherwise>
-                <button id="header_button" type="submit" name="button" value="login">Login</button>
+                <button id="header_button"
+                        type="submit"
+                        name="button"
+                        value="login"
+                        class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                    Login
+                </button>
             </c:otherwise>
         </c:choose>
+        <c:if test="${not empty sessionScope.login_id}">
+            <button id="header_change_password"
+                    type="submit"
+                    name="button"
+                    value="change_password"
+                    class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                Change password
+            </button>
+        </c:if>
     </form>
     <form action="${pageContext.request.contextPath}/users_servlet" method="post">
         <c:if test="${not empty sessionScope.login_id and sessionScope.is_admin}">
-            <button id="header_button" type="submit" name="button" value="show_users">Users</button>
+            <button id="header_button"
+                    type="submit"
+                    name="button"
+                    value="show_users"
+                    class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                Users
+            </button>
         </c:if>
         <c:if test="${not empty sessionScope.login_id}">
             <t1 id="header_user_name">Hello, ${sessionScope.login_id}</t1>

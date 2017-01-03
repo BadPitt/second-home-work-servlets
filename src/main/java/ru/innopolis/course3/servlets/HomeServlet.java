@@ -1,7 +1,5 @@
 package ru.innopolis.course3.servlets;
 
-import ru.innopolis.course3.models.user.UserService;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
