@@ -183,14 +183,6 @@ public class ArticleDao implements Dao<Article> {
         if (o == null) {
             logger.error("ARTICLE null object exception");
             throw new DBException();
-        } else if (o.getDate() == 0 && o.getUpdateDate() == 0) {
-            long date = System.currentTimeMillis();
-            o.setDate(date);
-            o.setUpdateDate(date);
-        } else if (o.getDate() == 0 || o.getUpdateDate() == 0) {
-            long date = o.getDate() | o.getUpdateDate();
-            o.setDate(date);
-            o.setUpdateDate(date);
         }
     }
 }
