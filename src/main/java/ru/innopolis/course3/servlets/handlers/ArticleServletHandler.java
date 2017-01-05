@@ -1,14 +1,9 @@
 package ru.innopolis.course3.servlets.handlers;
 
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.article.Article;
-import ru.innopolis.course3.models.article.ArticleService;
 import ru.innopolis.course3.models.comment.Comment;
-import ru.innopolis.course3.models.comment.CommentService;
-import ru.innopolis.course3.models.user.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

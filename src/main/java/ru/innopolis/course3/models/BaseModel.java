@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
  * methods {@code equals(Object obj)}
  * and {@code hashCode()}
  */
-public abstract class BaseModel implements DaoEntity {
+public abstract class BaseModel {
 
     private static Logger logger = LoggerFactory.getLogger(BaseModel.class);
 

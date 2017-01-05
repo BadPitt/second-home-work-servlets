@@ -28,7 +28,7 @@ public class ArticleDaoImpl implements ArticleDao {
             " WHERE ARTICLE_ID=? AND UPDATE_DATE=?;";
     private static final String DELETE_ARTICLE = "DELETE FROM ARTICLE " +
             " WHERE ARTICLE_ID = ? AND UPDATE_DATE=?;";
-    private static final String GET_ALL_ARTICLE = "SELECT A.dhdrhd," +
+    private static final String GET_ALL_ARTICLE = "SELECT " +
             " A.ARTICLE_ID, A.TITLE, A.SOURCE," +
             " A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.IS_ADMIN, U.VERSION, A.UPDATE_DATE" +
             " FROM ARTICLE A join P_USER U on A.USER_ID=U.USER_ID;";
