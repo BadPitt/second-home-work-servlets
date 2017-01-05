@@ -1,42 +1,62 @@
 package ru.innopolis.course3.models.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import ru.innopolis.course3.models.DBException;
+import ru.innopolis.course3.models.Dao;
 
 import java.util.List;
 
 /**
  * Service for handling User data
+ *
  * @author Danil Popov
  */
+@Service
 public class UserService {
 
-    private static UserDao userDao = new UserDao();
+    private UserDao userDao;
 
-    public static void addNewUser(User user) throws DBException {
+    @Autowired
+    @Qualifier("userDao")
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void addNewUser(User user) throws DBException {
         userDao.add(user);
     }
 
-    public static void removeUserById(int id, long version) throws DBException {
+    public void removeUserById(int id, long version) throws DBException {
         userDao.removeById(id, version);
     }
 
-    public static void updateUser(User user) throws DBException {
+    public void updateUser(User user) throws DBException {
         userDao.update(user);
     }
 
-    public static User getUserById(int id) throws DBException {
+    public User getUserById(int id) throws DBException {
         return userDao.getById(id);
     }
 
-    public static User getUserByName(String name) throws DBException {
-        return userDao.getByName(name);
+    public User getUserByName(String name) throws DBException {
+        //if (userDao instanceof UserDao) {
+            return ((UserDao) userDao).getByName(name);
+        //} else {
+            //return null;
+        //}
+        //return userDao.getByName(name);
     }
 
-    public static List<User> getAllUsers() throws DBException {
+    public List<User> getAllUsers() throws DBException {
         return userDao.getAll();
     }
 
-    public static void changeUsersPassword(String pass, User user) throws DBException {
-        userDao.changePassword(pass, user);
+    public void changeUsersPassword(String pass, User user) throws DBException {
+        //if (userDao instanceof UserDao) {
+            ((UserDao) userDao).changePassword(pass, user);
+        //}
+        //userDao.changePassword(pass, user);
     }
 }

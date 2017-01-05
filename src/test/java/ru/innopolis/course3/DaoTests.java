@@ -3,11 +3,11 @@ package ru.innopolis.course3;
 import org.junit.*;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.article.Article;
-import ru.innopolis.course3.models.article.ArticleDao;
+import ru.innopolis.course3.models.article.ArticleDaoImpl;
 import ru.innopolis.course3.models.comment.Comment;
-import ru.innopolis.course3.models.comment.CommentDao;
+import ru.innopolis.course3.models.comment.CommentDaoImpl;
 import ru.innopolis.course3.models.user.User;
-import ru.innopolis.course3.models.user.UserDao;
+import ru.innopolis.course3.models.user.UserDaoImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +20,9 @@ import static ru.innopolis.course3.DBConnection.*;
  */
 public class DaoTests {
 
-    private static UserDao userDao = new UserDao();
-    private static ArticleDao articleDao = new ArticleDao();
-    private static CommentDao commentDao = new CommentDao();
+    private static UserDaoImpl userDao = new UserDaoImpl();
+    private static ArticleDaoImpl articleDao = new ArticleDaoImpl();
+    private static CommentDaoImpl commentDao = new CommentDaoImpl();
 
     @BeforeClass
     public static void setConnectionTest() {

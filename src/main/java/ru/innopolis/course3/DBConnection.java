@@ -2,6 +2,7 @@ package ru.innopolis.course3;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.innopolis.course3.models.DBException;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -32,14 +33,14 @@ public class DBConnection {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DBException {
         createUserTable();
         createArticleTable();
         createCommentTable();
     }
 
-    public static final String DATABASE_URL = "jdbc/publishingis";
-    public static final String DATABASE_URL_TEST =
+    private static final String DATABASE_URL = "jdbc/publishingis";
+    private static final String DATABASE_URL_TEST =
             "jdbc:postgresql://localhost:5432/publishingis_test?user=postgres&password=postgres";
 
     public static boolean isTest = false;
@@ -86,7 +87,7 @@ public class DBConnection {
      * according {@code isTest} flag
      *
      * @return {@code Connection} with DB
-     * @throws SQLException
+     * @throws SQLException when something goes wrong
      */
     public static Connection getDbConnection() throws SQLException {
         return dbConnection.getConnection();

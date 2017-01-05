@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by danil on 31/12/16.
+ * @author Danil Popov
  */
 public class AuthFilter implements Filter {
 

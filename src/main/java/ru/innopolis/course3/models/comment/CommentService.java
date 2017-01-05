@@ -1,7 +1,12 @@
 package ru.innopolis.course3.models.comment;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import ru.innopolis.course3.models.DBException;
+import ru.innopolis.course3.models.Dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,31 +14,44 @@ import java.util.List;
  *
  * @author Danil Popov
  */
+@Service
 public class CommentService {
 
-    private static CommentDao commentDao = new CommentDao();
+    private CommentDao commentDao;
 
-    public static void addNewComment(Comment comment) throws DBException {
+    @Autowired
+    @Qualifier("commentDao")
+    public void setCommentDao(CommentDao commentDao) {
+        this.commentDao = commentDao;
+    }
+
+    public void addNewComment(Comment comment) throws DBException {
         commentDao.add(comment);
     }
 
-    public static void removeCommentById(int id, long updateDate) throws DBException {
+    public void removeCommentById(int id, long updateDate) throws DBException {
         commentDao.removeById(id, updateDate);
     }
 
-    public static void updateComment(Comment comment) throws DBException {
+    public void updateComment(Comment comment) throws DBException {
         commentDao.update(comment);
     }
 
-    public static Comment getCommentById(int id) throws DBException {
+    public Comment getCommentById(int id) throws DBException {
         return commentDao.getById(id);
     }
 
-    public static List<Comment> getAllComments() throws DBException {
+    public List<Comment> getAllComments() throws DBException {
         return commentDao.getAll();
     }
 
-    public static List<Comment> getCommentsByArticleId(int id) throws DBException {
-        return commentDao.getByArticleId(id);
+
+    public List<Comment> getCommentsByArticleId(int id) throws DBException {
+        /* FIXME: Aspect changes my dao to proxy objects! They aren't instances of CommentDaoImpl */
+        //if (commentDao instanceof CommentDao) {
+            return ((CommentDao) commentDao).getByArticleId(id);
+        //} else {
+            //return new ArrayList<>();
+        //}
     }
 }

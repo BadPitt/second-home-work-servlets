@@ -1,6 +1,9 @@
 package ru.innopolis.course3.servlets.handlers;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.innopolis.course3.models.DBException;
+import ru.innopolis.course3.models.article.ArticleService;
 import ru.innopolis.course3.models.user.User;
 import ru.innopolis.course3.models.user.UserService;
 
@@ -39,7 +42,7 @@ public abstract class UserServletHandler extends ServletHandler {
     void removeUser(HttpServletRequest req) throws DBException {
         int id = Integer.parseInt(req.getParameter("user_id"));
         long version = Long.parseLong(req.getParameter("user_version"));
-        UserService.removeUserById(id, version);
+        getUserService().removeUserById(id, version);
     }
 
     void updateUser(HttpServletRequest req) throws DBException {
@@ -52,11 +55,11 @@ public abstract class UserServletHandler extends ServletHandler {
         user.setIsAdmin(Boolean.parseBoolean(req.getParameter("user_is_admin")));
         user.setIsActive(Boolean.parseBoolean(req.getParameter("user_is_active")));
         user.setVersion(version);
-        UserService.updateUser(user);
+        getUserService().updateUser(user);
 
         String password = req.getParameter("user_password");
         if (password != null && !password.isEmpty()) {
-            UserService.changeUsersPassword(password, user);
+            getUserService().changeUsersPassword(password, user);
         }
     }
 
@@ -68,16 +71,16 @@ public abstract class UserServletHandler extends ServletHandler {
         user.setSalt(hashAndSalt[1]);
         user.setIsAdmin(Boolean.parseBoolean(req.getParameter("user_is_admin")));
         user.setIsActive(Boolean.parseBoolean(req.getParameter("user_is_active")));
-        UserService.addNewUser(user);
+        getUserService().addNewUser(user);
     }
 
     void setUsersList(HttpServletRequest req) throws DBException {
-        req.setAttribute("users", UserService.getAllUsers());
+        req.setAttribute("users", getUserService().getAllUsers());
     }
 
     protected void setUser(HttpServletRequest req) throws DBException {
         int id = Integer.parseInt(req.getParameter("user_id"));
-        User user = UserService.getUserById(id);
+        User user = getUserService().getUserById(id);
         req.setAttribute("user", user);
     }
 }

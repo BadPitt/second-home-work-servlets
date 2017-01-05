@@ -1,5 +1,8 @@
 package ru.innopolis.course3.servlets.handlers;
 
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.article.Article;
 import ru.innopolis.course3.models.article.ArticleService;
@@ -13,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author Danil Popov
  */
+//@Configurable("articleServletHandler")
 public abstract class ArticleServletHandler extends ServletHandler {
 
     public static ArticleServletHandler newHandler(String code) {
@@ -46,7 +50,7 @@ public abstract class ArticleServletHandler extends ServletHandler {
     }
 
     void handleDeleteComment(HttpServletRequest req) throws DBException {
-        CommentService.removeCommentById(
+        getCommentService().removeCommentById(
                 Integer.parseInt(req.getParameter("comment_id")),
                 Long.parseLong(req.getParameter("comment_update_date"))
         );
@@ -59,8 +63,8 @@ public abstract class ArticleServletHandler extends ServletHandler {
         comment.setDate(Long.parseLong(req.getParameter("comment_date")));
         comment.setUpdateDate(Long.parseLong(req.getParameter("comment_update_date")));
         comment.setArticleId(Integer.parseInt(req.getParameter("article_id")));
-        comment.setUser(UserService.getUserByName(req.getParameter("user_name")));
-        CommentService.updateComment(comment);
+        comment.setUser(getUserService().getUserByName(req.getParameter("user_name")));
+        getCommentService().updateComment(comment);
     }
 
     void setCommentForEdit(HttpServletRequest req) throws DBException {
@@ -75,26 +79,26 @@ public abstract class ArticleServletHandler extends ServletHandler {
         comment.setDate(date);
         comment.setUpdateDate(date);
         comment.setArticleId(Integer.parseInt(req.getParameter("article_id")));
-        comment.setUser(UserService.getUserByName(req.getParameter("user_name")));
-        CommentService.addNewComment(comment);
+        comment.setUser(getUserService().getUserByName(req.getParameter("user_name")));
+        getCommentService().addNewComment(comment);
     }
 
     void setCommentsForArticle(HttpServletRequest req) throws DBException {
-        req.setAttribute("comments", CommentService.getCommentsByArticleId(
+        req.setAttribute("comments", getCommentService().getCommentsByArticleId(
                 Integer.parseInt(req.getParameter("article_id"))
                 )
         );
     }
 
     void handleDeleteArticle(HttpServletRequest req) throws DBException {
-        ArticleService.removeArticleById(
+        getArticleService().removeArticleById(
                 Integer.parseInt(req.getParameter("article_id")),
                 Long.parseLong(req.getParameter("article_update_date"))
         );
     }
 
     void setArticle(HttpServletRequest req) throws DBException {
-        Article article = ArticleService.getArticleById(
+        Article article = getArticleService().getArticleById(
                 Integer.parseInt(req.getParameter("article_id"))
         );
         req.setAttribute("article", article);
@@ -106,7 +110,7 @@ public abstract class ArticleServletHandler extends ServletHandler {
         article.setTitle(req.getParameter("article_title"));
         article.setSource(req.getParameter("article_source"));
         article.setAuthor(
-                UserService.getUserById(
+                getUserService().getUserById(
                         Integer.parseInt(req.getParameter("article_user_id"))
                 )
         );
@@ -116,11 +120,11 @@ public abstract class ArticleServletHandler extends ServletHandler {
         article.setUpdateDate(
                 Long.parseLong(req.getParameter("article_update_date"))
         );
-        ArticleService.updateArticle(article);
+        getArticleService().updateArticle(article);
     }
 
     void setAllArticles(HttpServletRequest req) throws DBException {
-        req.setAttribute("articles", ArticleService.getAllArticles());
+        req.setAttribute("articles", getArticleService().getAllArticles());
     }
 
     void handleAddArticle(HttpServletRequest req) throws DBException {
@@ -129,11 +133,11 @@ public abstract class ArticleServletHandler extends ServletHandler {
         article.setTitle(req.getParameter("article_title"));
         article.setSource(req.getParameter("article_source"));
         article.setDate(date);
-        article.setAuthor(UserService.getUserByName(
+        article.setAuthor(getUserService().getUserByName(
                 (String) req.getSession().getAttribute("login_id"))
         );
         article.setUpdateDate(date);
-        ArticleService.addNewArticle(article);
+        getArticleService().addNewArticle(article);
     }
 }
 
@@ -273,6 +277,7 @@ class DeleteCommentHandler extends ArticleServletHandler {
     }
 }
 
+//@Configurable("defaultArticleHandler")
 class DefaultArticleHandler extends ArticleServletHandler {
 
     @Override

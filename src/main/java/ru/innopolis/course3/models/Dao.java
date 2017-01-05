@@ -1,5 +1,7 @@
 package ru.innopolis.course3.models;
 
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 /**
@@ -7,7 +9,7 @@ import java.util.List;
  *
  * @author Danil Popov
  */
-public interface Dao<T> {
+public interface Dao<T extends BaseModel> {
 
     /**
      * Add new instance of entity to DB

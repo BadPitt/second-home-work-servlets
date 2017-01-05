@@ -1,5 +1,8 @@
 package ru.innopolis.course3.models.article;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import ru.innopolis.course3.models.DBException;
 
 import java.util.List;
@@ -9,27 +12,34 @@ import java.util.List;
  *
  * @author Danil Popov
  */
+@Service
 public class ArticleService {
 
-    private static ArticleDao articleDao = new ArticleDao();
+    private ArticleDao articleDao;
 
-    public static void addNewArticle(Article article) throws DBException {
+    @Autowired
+    @Qualifier("articleDao")
+    public void setArticleDao(ArticleDao articleDao) {
+        this.articleDao = articleDao;
+    }
+
+    public void addNewArticle(Article article) throws DBException {
         articleDao.add(article);
     }
 
-    public static void removeArticleById(int id, long updateDate) throws DBException {
+    public void removeArticleById(int id, long updateDate) throws DBException {
         articleDao.removeById(id, updateDate);
     }
 
-    public static void updateArticle(Article article) throws DBException {
+    public void updateArticle(Article article) throws DBException {
         articleDao.update(article);
     }
 
-    public static Article getArticleById(int id) throws DBException {
+    public Article getArticleById(int id) throws DBException {
         return articleDao.getById(id);
     }
 
-    public static List<Article> getAllArticles() throws DBException {
+    public List<Article> getAllArticles() throws DBException {
         return articleDao.getAll();
     }
 }

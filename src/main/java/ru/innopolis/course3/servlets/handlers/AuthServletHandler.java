@@ -48,7 +48,7 @@ public abstract class AuthServletHandler extends ServletHandler {
         user.setIsActive(true);
 
         // TODO: handle errors
-        UserService.addNewUser(user);
+        getUserService().addNewUser(user);
 
         session.setAttribute("login_id", user.getName());
         session.setAttribute("is_admin", false);
@@ -59,7 +59,7 @@ public abstract class AuthServletHandler extends ServletHandler {
 
     boolean handleLogin(HttpServletRequest req) throws DBException {
         HttpSession session = req.getSession();
-        User user = UserService.getUserByName(req.getParameter("user_name"));
+        User user = getUserService().getUserByName(req.getParameter("user_name"));
         boolean isPassEquals = isPassEquals(req.getParameter("user_password"),
                 new String[] {user.getPassword(), user.getSalt()});
         if (isPassEquals) {
@@ -79,14 +79,14 @@ public abstract class AuthServletHandler extends ServletHandler {
     void changePassword(HttpServletRequest req) throws DBException {
         int id = Integer.parseInt(req.getParameter("user_id"));
         String password = req.getParameter("user_password");
-        User user = UserService.getUserById(id);
-        UserService.changeUsersPassword(password, user);
+        User user = getUserService().getUserById(id);
+        getUserService().changeUsersPassword(password, user);
     }
 
     void setUser(HttpServletRequest req) throws DBException {
         HttpSession session = req.getSession();
         String name = (String) session.getAttribute("login_id");
-        User user = UserService.getUserByName(name);
+        User user = getUserService().getUserByName(name);
         req.setAttribute("user", user);
     }
 }
