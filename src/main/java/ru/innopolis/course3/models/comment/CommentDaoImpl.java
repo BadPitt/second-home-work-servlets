@@ -1,7 +1,10 @@
 package ru.innopolis.course3.models.comment;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.innopolis.course3.DBConnection;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.Dao;
 import ru.innopolis.course3.models.user.User;
@@ -43,25 +46,26 @@ public class CommentDaoImpl implements CommentDao {
             " FROM COMMENT C join P_USER U on C.USER_ID=U.USER_ID" +
             " WHERE C.ARTICLE_ID=?;";
 
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    @Qualifier("jdbcTemplate")
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     /**
      * @see Dao#add(ru.innopolis.course3.models.BaseModel)
      * @param o Comment which will add
      */
     @Override
     public void add(Comment o) throws DBException {
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(ADD_COMMENT)) {
-
-            statement.setString(1, o.getSource());
-            statement.setLong(2, o.getDate());
-            statement.setInt(3, o.getArticleId());
-            statement.setInt(4, o.getUser().getId());
-            statement.setLong(5, o.getUpdateDate());
-            statement.execute();
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
+        jdbcTemplate.update(ADD_COMMENT,
+                o.getSource(),
+                o.getDate(),
+                o.getArticleId(),
+                o.getUser().getId(),
+                o.getUpdateDate());
     }
 
     /**
@@ -70,23 +74,17 @@ public class CommentDaoImpl implements CommentDao {
      */
     @Override
     public void update(Comment o) throws DBException {
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(UPDATE_COMMENT)) {
-            long oldUpdateDate = o.getUpdateDate();
-            o.setUpdateDate(System.currentTimeMillis());
+        long oldUpdateDate = o.getUpdateDate();
+        o.setUpdateDate(System.currentTimeMillis());
 
-            statement.setString(1, o.getSource());
-            statement.setLong(2, o.getDate());
-            statement.setInt(3, o.getArticleId());
-            statement.setInt(4, o.getUser().getId());
-            statement.setLong(5, o.getUpdateDate());
-            statement.setInt(6, o.getId());
-            statement.setLong(7, oldUpdateDate);
-            statement.execute();
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
+        jdbcTemplate.update(UPDATE_COMMENT,
+                o.getSource(),
+                o.getDate(),
+                o.getArticleId(),
+                o.getUser().getId(),
+                o.getUpdateDate(),
+                o.getId(),
+                oldUpdateDate);
     }
 
     /**
@@ -95,16 +93,9 @@ public class CommentDaoImpl implements CommentDao {
      */
     @Override
     public void removeById(int id, long updateDate) throws DBException {
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(DELETE_COMMENT)) {
-
-            statement.setInt(1, id);
-            statement.setLong(2, updateDate);
-            statement.execute();
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
+        jdbcTemplate.update(DELETE_COMMENT,
+                id,
+                updateDate);
     }
 
     /**
@@ -113,31 +104,29 @@ public class CommentDaoImpl implements CommentDao {
      */
     @Override
     public List<Comment> getAll() throws DBException {
-        List<Comment> list = new ArrayList<>();
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(GET_ALL_COMMENTS)) {
-
-            ResultSet result = statement.executeQuery();
-            while (result.next()) {
-                Comment comment = new Comment();
-                comment.setId(result.getInt(1));
-                comment.setSource(result.getString(2));
-                comment.setDate(result.getLong(3));
-                comment.setArticleId(result.getInt(4));
-                User user = new User();
-                user.setId(result.getInt(5));
-                user.setName(result.getString(6));
-                user.setIsActive(result.getBoolean(7));
-                user.setIsAdmin(result.getBoolean(8));
-                comment.setUser(user);
-                comment.setUpdateDate(result.getLong(9));
-                list.add(comment);
-            }
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
-        return list;
+        return jdbcTemplate.queryForObject(GET_ALL_COMMENTS,
+                new RowMapper<List<Comment>>() {
+                    @Override
+                    public List<Comment> mapRow(ResultSet result, int rowNum) throws SQLException {
+                        List<Comment> list = new ArrayList<>();
+                        do {
+                            Comment comment = new Comment();
+                            comment.setId(result.getInt(1));
+                            comment.setSource(result.getString(2));
+                            comment.setDate(result.getLong(3));
+                            comment.setArticleId(result.getInt(4));
+                            User user = new User();
+                            user.setId(result.getInt(5));
+                            user.setName(result.getString(6));
+                            user.setIsActive(result.getBoolean(7));
+                            user.setIsAdmin(result.getBoolean(8));
+                            comment.setUser(user);
+                            comment.setUpdateDate(result.getLong(9));
+                            list.add(comment);
+                        } while (result.next());
+                        return list;
+                    }
+                });
     }
 
     /**
@@ -147,30 +136,26 @@ public class CommentDaoImpl implements CommentDao {
      */
     @Override
     public Comment getById(int id) throws DBException {
-        Comment comment = new Comment();
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(GET_COMMENT_BY_ID)) {
-
-            statement.setInt(1, id);
-            ResultSet result = statement.executeQuery();
-            while (result.next()) {
-                comment.setId(result.getInt(1));
-                comment.setSource(result.getString(2));
-                comment.setDate(result.getLong(3));
-                comment.setArticleId(result.getInt(4));
-                User user = new User();
-                user.setId(result.getInt(5));
-                user.setName(result.getString(6));
-                user.setIsActive(result.getBoolean(7));
-                user.setIsAdmin(result.getBoolean(8));
-                comment.setUser(user);
-                comment.setUpdateDate(result.getLong(9));
-            }
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
-        return comment;
+        return jdbcTemplate.queryForObject(GET_COMMENT_BY_ID,
+                new RowMapper<Comment>() {
+                    @Override
+                    public Comment mapRow(ResultSet result, int rowNum) throws SQLException {
+                        Comment comment = new Comment();
+                        comment.setId(result.getInt(1));
+                        comment.setSource(result.getString(2));
+                        comment.setDate(result.getLong(3));
+                        comment.setArticleId(result.getInt(4));
+                        User user = new User();
+                        user.setId(result.getInt(5));
+                        user.setName(result.getString(6));
+                        user.setIsActive(result.getBoolean(7));
+                        user.setIsAdmin(result.getBoolean(8));
+                        comment.setUser(user);
+                        comment.setUpdateDate(result.getLong(9));
+                        return comment;
+                    }
+                },
+                id);
     }
 
     /**
@@ -180,31 +165,29 @@ public class CommentDaoImpl implements CommentDao {
      * @return {@code List<Comment>}
      */
     public List<Comment> getByArticleId(int id) throws DBException {
-        List<Comment> list = new ArrayList<>();
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(GET_ALL_COMMENTS_BY_ARTICLE)) {
-
-            statement.setInt(1, id);
-            ResultSet result = statement.executeQuery();
-            while (result.next()) {
-                Comment comment = new Comment();
-                comment.setId(result.getInt(1));
-                comment.setSource(result.getString(2));
-                comment.setDate(result.getLong(3));
-                comment.setArticleId(result.getInt(4));
-                User user = new User();
-                user.setId(result.getInt(5));
-                user.setName(result.getString(6));
-                user.setIsActive(result.getBoolean(7));
-                user.setIsAdmin(result.getBoolean(8));
-                comment.setUser(user);
-                comment.setUpdateDate(result.getLong(9));
-                list.add(comment);
-            }
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
-        return list;
+        return jdbcTemplate.queryForObject(GET_ALL_COMMENTS_BY_ARTICLE,
+                new RowMapper<List<Comment>>() {
+                    @Override
+                    public List<Comment> mapRow(ResultSet result, int rowNum) throws SQLException {
+                        List<Comment> list = new ArrayList<>();
+                        do {
+                            Comment comment = new Comment();
+                            comment.setId(result.getInt(1));
+                            comment.setSource(result.getString(2));
+                            comment.setDate(result.getLong(3));
+                            comment.setArticleId(result.getInt(4));
+                            User user = new User();
+                            user.setId(result.getInt(5));
+                            user.setName(result.getString(6));
+                            user.setIsActive(result.getBoolean(7));
+                            user.setIsAdmin(result.getBoolean(8));
+                            comment.setUser(user);
+                            comment.setUpdateDate(result.getLong(9));
+                            list.add(comment);
+                        } while (result.next());
+                        return list;
+                    }
+                },
+                id);
     }
 }

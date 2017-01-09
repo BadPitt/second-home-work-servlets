@@ -1,7 +1,10 @@
 package ru.innopolis.course3.models.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.innopolis.course3.DBConnection;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.Dao;
 import ru.innopolis.course3.utils.Utils;
@@ -44,6 +47,14 @@ public class UserDaoImpl implements UserDao {
             " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD, SALT, VERSION " +
             " FROM P_USER WHERE NAME=?;";
 
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    @Qualifier("jdbcTemplate")
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     /**
      * @see Dao#add(ru.innopolis.course3.models.BaseModel)
      *
@@ -51,20 +62,13 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public void add(User o) throws DBException {
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(ADD_USER)) {
-
-            statement.setString(1, o.getName());
-            statement.setString(2, o.getPassword());
-            statement.setString(3, o.getSalt());
-            statement.setBoolean(4, o.isActive());
-            statement.setBoolean(5, o.isAdmin());
-            statement.setLong(6, o.getVersion());
-            statement.execute();
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
+        jdbcTemplate.update(ADD_USER,
+                o.getName(),
+                o.getPassword(),
+                o.getSalt(),
+                o.isActive(),
+                o.isAdmin(),
+                o.getVersion());
     }
 
     /**
@@ -74,22 +78,14 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public void update(User o) throws DBException {
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(UPDATE_USER)) {
-
-            statement.setString(1, o.getName());
-            statement.setBoolean(2, o.isActive());
-            statement.setBoolean(3, o.isAdmin());
-            statement.setLong(4, o.getVersion() + 1);
-            statement.setInt(5, o.getId());
-            statement.setLong(6, o.getVersion());
-
-            o.setVersion(o.getVersion() + 1);
-            statement.execute();
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
+        jdbcTemplate.update(UPDATE_USER,
+                o.getName(),
+                o.isActive(),
+                o.isAdmin(),
+                o.getVersion() + 1,
+                o.getId(),
+                o.getVersion());
+        o.setVersion(o.getVersion() + 1);
     }
 
     /**
@@ -99,16 +95,9 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public void removeById(int id, long version) throws DBException {
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(DELETE_USER)) {
-
-            statement.setInt(1, id);
-            statement.setLong(2, version);
-            statement.execute();
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
+        jdbcTemplate.update(DELETE_USER,
+                id,
+                version);
     }
 
     /**
@@ -118,27 +107,25 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public List<User> getAll() throws DBException {
-        List<User> list = new ArrayList<>();
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(GET_ALL_USERS)) {
-
-            ResultSet result = statement.executeQuery();
-            while (result.next()) {
-                User user = new User();
-                user.setId(result.getInt(1));
-                user.setName(result.getString(2));
-                user.setIsActive(result.getBoolean(3));
-                user.setIsAdmin(result.getBoolean(4));
-                user.setPassword(result.getString(5));
-                user.setSalt(result.getString(6));
-                user.setVersion(result.getLong(7));
-                list.add(user);
-            }
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
-        return list;
+        return jdbcTemplate.queryForObject(GET_ALL_USERS,
+                new RowMapper<List<User>>() {
+                    @Override
+                    public List<User> mapRow(ResultSet result, int rowNum) throws SQLException {
+                        List<User> list = new ArrayList<>();
+                        do {
+                            User user = new User();
+                            user.setId(result.getInt(1));
+                            user.setName(result.getString(2));
+                            user.setIsActive(result.getBoolean(3));
+                            user.setIsAdmin(result.getBoolean(4));
+                            user.setPassword(result.getString(5));
+                            user.setSalt(result.getString(6));
+                            user.setVersion(result.getLong(7));
+                            list.add(user);
+                        } while (result.next());
+                        return list;
+                    }
+                });
     }
 
     /**
@@ -149,26 +136,22 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public User getById(int id) throws DBException {
-        User user = new User();
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(GET_USER_BY_ID)) {
-
-            statement.setInt(1, id);
-            ResultSet result = statement.executeQuery();
-            while (result.next()) {
-                user.setId(result.getInt(1));
-                user.setName(result.getString(2));
-                user.setIsActive(result.getBoolean(3));
-                user.setIsAdmin(result.getBoolean(4));
-                user.setPassword(result.getString(5));
-                user.setSalt(result.getString(6));
-                user.setVersion(result.getLong(7));
-            }
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
-        return user;
+        return jdbcTemplate.queryForObject(GET_USER_BY_ID,
+                new RowMapper<User>() {
+                    @Override
+                    public User mapRow(ResultSet result, int rowNum) throws SQLException {
+                        User user = new User();
+                        user.setId(result.getInt(1));
+                        user.setName(result.getString(2));
+                        user.setIsActive(result.getBoolean(3));
+                        user.setIsAdmin(result.getBoolean(4));
+                        user.setPassword(result.getString(5));
+                        user.setSalt(result.getString(6));
+                        user.setVersion(result.getLong(7));
+                        return user;
+                    }
+                },
+                id);
     }
 
     /**
@@ -178,26 +161,22 @@ public class UserDaoImpl implements UserDao {
      * @return {@code User}
      */
     public User getByName(String name) throws DBException {
-        User user = new User();
-        try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement statement = conn.prepareStatement(GET_USER_BY_NAME)) {
-
-            statement.setString(1, name);
-            ResultSet result = statement.executeQuery();
-            while (result.next()) {
-                user.setId(result.getInt(1));
-                user.setName(result.getString(2));
-                user.setIsActive(result.getBoolean(3));
-                user.setIsAdmin(result.getBoolean(4));
-                user.setPassword(result.getString(5));
-                user.setSalt(result.getString(6));
-                user.setVersion(result.getLong(7));
-            }
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
-        return user;
+        return jdbcTemplate.queryForObject(GET_USER_BY_NAME,
+                new RowMapper<User>() {
+                    @Override
+                    public User mapRow(ResultSet result, int rowNum) throws SQLException {
+                        User user = new User();
+                        user.setId(result.getInt(1));
+                        user.setName(result.getString(2));
+                        user.setIsActive(result.getBoolean(3));
+                        user.setIsAdmin(result.getBoolean(4));
+                        user.setPassword(result.getString(5));
+                        user.setSalt(result.getString(6));
+                        user.setVersion(result.getLong(7));
+                        return user;
+                    }
+                },
+                name);
     }
 
     /**
@@ -209,23 +188,15 @@ public class UserDaoImpl implements UserDao {
      *                      something goes wrong
      */
     public void changePassword(String password, User user) throws DBException {
-        try (Connection conn = DBConnection.getDbConnection();
-        PreparedStatement statement = conn.prepareStatement(CHANGE_PASSWORD)) {
+        String[] hashAndSaltArray = Utils.getHashAndSaltArray(password);
 
-            String[] hashAndSaltArray = Utils.getHashAndSaltArray(password);
+        jdbcTemplate.update(CHANGE_PASSWORD,
+                hashAndSaltArray[0],
+                hashAndSaltArray[1],
+                user.getVersion() + 1,
+                user.getId(),
+                user.getVersion());
 
-            statement.setString(1, hashAndSaltArray[0]);
-            statement.setString(2, hashAndSaltArray[1]);
-            statement.setLong(3, user.getVersion() + 1);
-            statement.setInt(4, user.getId());
-            statement.setLong(5, user.getVersion());
-
-            user.setVersion(user.getVersion() + 1);
-
-            statement.execute();
-
-        } catch (SQLException e) {
-            throw new DBException(e);
-        }
+        user.setVersion(user.getVersion() + 1);
     }
 }
