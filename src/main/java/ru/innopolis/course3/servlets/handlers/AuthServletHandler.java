@@ -63,8 +63,8 @@ public abstract class AuthServletHandler extends ServletHandler {
                 new String[] {user.getPassword(), user.getSalt()});
         if (isPassEquals) {
             session.setAttribute("login_id", user.getName());
-            session.setAttribute("is_admin", user.isAdmin());
-            session.setAttribute("is_active", user.isActive());
+            session.setAttribute("is_admin", user.getIsAdmin());
+            session.setAttribute("is_active", user.getIsActive());
         }
         return isPassEquals;
     }
@@ -104,7 +104,7 @@ class ConfirmRegistrationAuthHandler extends AuthServletHandler {
     public String getPageAddress(HttpServletRequest req, HttpServletResponse resp) {
         try {
             boolean isSuccess = handleReg(req);
-            return isSuccess ? "/home" : "/auth/reg.jsp";
+            return isSuccess ? "../home" : "reg";
         } catch (DBException e) {
             return handleError(req, e.getMessage());
         }
@@ -117,7 +117,7 @@ class ConfirmLoginAuthHandler extends AuthServletHandler {
     public String getPageAddress(HttpServletRequest req, HttpServletResponse resp) {
         try {
             boolean isSuccess = handleLogin(req);
-            return isSuccess ? "/home" : "/auth/login.jsp";
+            return isSuccess ? "../home" : "login";
         } catch (DBException e) {
             return handleError(req, e.getMessage());
         }
@@ -128,7 +128,7 @@ class DefaultAuthHandler extends AuthServletHandler {
 
     @Override
     public String getPageAddress(HttpServletRequest req, HttpServletResponse resp) {
-        return "/auth/login.jsp";
+        return "login";
     }
 }
 
@@ -137,7 +137,7 @@ class LogoutAuthHandler extends AuthServletHandler {
     @Override
     public String getPageAddress(HttpServletRequest req, HttpServletResponse resp) {
         handleLogout(req);
-        return "/index.jsp";
+        return "home";
     }
 }
 
@@ -147,7 +147,7 @@ class ChangePasswordAuthHandler extends AuthServletHandler {
     public String getPageAddress(HttpServletRequest req, HttpServletResponse resp) {
         try {
             setUser(req);
-            return "/change_password.jsp";
+            return "change_password";
         } catch (DBException e) {
             return handleError(req, e.getMessage());
         }
@@ -160,7 +160,7 @@ class ConfirmChangePasswordAuthHandler extends AuthServletHandler {
     public String getPageAddress(HttpServletRequest req, HttpServletResponse resp) {
         try {
             changePassword(req);
-            return "/index.jsp";
+            return "home";
         } catch (DBException e) {
             return handleError(req, e.getMessage());
         }

@@ -1,20 +1,26 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/material.min.css">
+    <spring:url value="/resources/styles.css" var="mystyles" />
+    <spring:url value="/resources/styles/material.min.css" var="materialstyles" />
+    <spring:url value="/resources/styles/material.min.js" var="materialjs" />
+    <link rel="stylesheet" href="${mystyles}">
+    <link rel="stylesheet" href="${materialstyles}"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script type="text/javascript" src="${materialjs}"></script>
     <title>Publishing IS</title>
 </head>
 <body>
-<%@include file='header_template.jsp'%>
+<%@ include file="resources/header_template.jsp"%>
 <div id="body_content">
     <p>
         <t1>Choose action</t1>
     </p>
-<form action="${pageContext.request.contextPath}/auth_servlet" method="post">
+<form action="${pageContext.request.contextPath}/auth/" method="post">
     <p>
         <button type="submit"
                 name="button"
@@ -24,7 +30,7 @@
         </button>
     </p>
 </form>
-<form action="${pageContext.request.contextPath}/articles_servlet" method="post">
+<form action="${pageContext.request.contextPath}/articles/" method="post">
     <p>
         <button type="submit"
                 name="button"
@@ -35,6 +41,5 @@
     </p>
 </form>
 </div>
-<script type="text/javascript" src="${pageContext.request.contextPath}/styles/material.min.js"></script>
 </body>
 </html>

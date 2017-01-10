@@ -1,5 +1,7 @@
 package ru.innopolis.course3.servlets.handlers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.innopolis.course3.models.article.ArticleService;
@@ -14,17 +16,22 @@ import javax.servlet.http.HttpServletResponse;
  */
 public abstract class ServletHandler {
 
-    private ApplicationContext context =
-            new ClassPathXmlApplicationContext("spring.xml");
+    //private ApplicationContext context =
+            //new ClassPathXmlApplicationContext("spring.xml");
 
-    private ArticleService articleService = context
-            .getBean("articleService", ArticleService.class);
+    @Autowired
+    @Qualifier("articleService")
+    private ArticleService articleService;
 
-    private CommentService commentService = context
-            .getBean("commentService", CommentService.class);
+    @Autowired
+    @Qualifier("commentService")
+    private CommentService commentService;// = context
+            //.getBean("commentService", CommentService.class);
 
-    private UserService userService = context
-            .getBean("userService", UserService.class);
+    @Autowired
+    @Qualifier("userService")
+    private UserService userService;// = context
+            //.getBean("userService", UserService.class);
     
     public ArticleService getArticleService() {
         return articleService;
@@ -42,6 +49,6 @@ public abstract class ServletHandler {
 
     String handleError(HttpServletRequest req, String message) {
         req.setAttribute("error_message", message);
-        return "/error_page.jsp";
+        return "error_page";
     }
 }

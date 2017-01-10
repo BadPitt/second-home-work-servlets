@@ -66,8 +66,8 @@ public class UserDaoImpl implements UserDao {
                 o.getName(),
                 o.getPassword(),
                 o.getSalt(),
-                o.isActive(),
-                o.isAdmin(),
+                o.getIsActive(),
+                o.getIsAdmin(),
                 o.getVersion());
     }
 
@@ -80,8 +80,8 @@ public class UserDaoImpl implements UserDao {
     public void update(User o) throws DBException {
         jdbcTemplate.update(UPDATE_USER,
                 o.getName(),
-                o.isActive(),
-                o.isAdmin(),
+                o.getIsActive(),
+                o.getIsAdmin(),
                 o.getVersion() + 1,
                 o.getId(),
                 o.getVersion());

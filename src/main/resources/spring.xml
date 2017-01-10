@@ -3,6 +3,7 @@
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -12,15 +13,17 @@
                 http://www.springframework.org/schema/aop
                 http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
                 http://www.springframework.org/schema/jee
-                http://www.springframework.org/schema/jee/spring-jee-3.0.xsd">
+                http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+                http://www.springframework.org/schema/mvc
+                http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
     <!--<aop:spring-configured/>-->
+
+    <!--
 
     <aop:aspectj-autoproxy />
 
     <context:annotation-config/>
-
-    <context:component-scan base-package="ru.innopolis.course3"/>
 
     <bean id="userDaoChecker"
           class="ru.innopolis.course3.models.user.UserDaoChecker"/>
@@ -50,6 +53,8 @@
           class="org.springframework.jdbc.core.JdbcTemplate">
         <constructor-arg ref="dataSource" />
     </bean>
+-->
+
 
 
 
@@ -65,6 +70,8 @@
         <property name="initialSize" value="5" />
         <property name="maxActive" value="10" />
     </bean>-->
+
+    <!--<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />-->
 
 
 </beans>

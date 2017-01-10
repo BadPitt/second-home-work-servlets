@@ -37,7 +37,7 @@ public class BlockedFilter implements Filter{
             active = (Boolean)attr;
         }
         if (!active) {
-            req.getRequestDispatcher("/index.jsp").forward(request, response);
+            req.getRequestDispatcher("/home.jsp").forward(request, response);
         } else {
             chain.doFilter(request, response);
         }

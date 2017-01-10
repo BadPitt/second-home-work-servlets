@@ -1,12 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <section id="section_header">
-    <form action="${pageContext.request.contextPath}/auth_servlet" method="post">
+    <form action="${pageContext.request.contextPath}/auth/" method="post">
         <c:choose>
             <c:when test="${not empty sessionScope.login_id}">
                 <button id="header_button"
                         type="submit"
-                        name="button"
-                        value="logout"
+                        name="logout"
                         class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                     Logout
                 </button>
@@ -24,14 +23,13 @@
         <c:if test="${not empty sessionScope.login_id}">
             <button id="header_change_password"
                     type="submit"
-                    name="button"
-                    value="change_password"
+                    name="change_password"
                     class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                 Change password
             </button>
         </c:if>
     </form>
-    <form action="${pageContext.request.contextPath}/users_servlet" method="post">
+    <form action="${pageContext.request.contextPath}/users/" method="post">
         <c:if test="${not empty sessionScope.login_id and sessionScope.is_admin}">
             <button id="header_button"
                     type="submit"

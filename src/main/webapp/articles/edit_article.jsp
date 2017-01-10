@@ -3,14 +3,14 @@
 <html>
 <head>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/styles.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/material.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>Edit article</title>
 </head>
 <body>
 <c:if test="${not empty sessionScope.login_id and sessionScope.is_active}">
-    <%@include file='/header_template.jsp'%>
+    <%@include file='/resources/header_template.jsp'%>
     <form action="${pageContext.request.contextPath}/articles_servlet" method="post">
         <table>
             <th>

@@ -42,7 +42,7 @@ public class User extends BaseModel {
         this.password = password;
     }
 
-    public boolean isAdmin() {
+    public boolean getIsAdmin() {
         return isAdmin;
     }
 
@@ -50,7 +50,7 @@ public class User extends BaseModel {
         this.isAdmin = role;
     }
 
-    public boolean isActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 

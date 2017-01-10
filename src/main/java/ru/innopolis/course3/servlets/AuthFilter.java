@@ -38,7 +38,7 @@ public class AuthFilter implements Filter {
         if (excludeUrls.contains(url) || (login != null && isAdmin)) {
             chain.doFilter(request, response);
         } else {
-            req.getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
+            req.getServletContext().getRequestDispatcher("/home.jsp").forward(request, response);
         }
     }
 

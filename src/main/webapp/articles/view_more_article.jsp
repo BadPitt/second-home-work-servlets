@@ -3,13 +3,13 @@
 <html>
 <head>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/styles.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/material.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>${article.getTitle()}</title>
 </head>
 <body>
-<%@include file='/header_template.jsp'%>
+<%@include file='/resources/header_template.jsp'%>
 <form action="${pageContext.request.contextPath}/articles_servlet" method="post">
     <div class="articles-flex-container">
         <div id="article_card" class="demo-card-square mdl-card mdl-shadow--2dp">
