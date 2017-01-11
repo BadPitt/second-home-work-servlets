@@ -26,14 +26,14 @@
                 </h1>
             </div>
             <div class="mdl-card__actions mdl-card--border">
-                <button type="submit" name="button" value="view_more"
+                <button type="submit" name="view_more"
                         class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
                     View more
                 </button>
                 <c:if test="${article.getAuthor().getName() eq sessionScope.login_id or sessionScope.is_admin}">
-                    <button type="submit" name="button" value="edit_article"
+                    <button type="submit" name="edit_article"
                             class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Edit</button>
-                    <button type="submit" name="button" value="delete_article"
+                    <button type="submit" name="delete_article"
                             class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Delete</button>
                 </c:if>
                     <input type="hidden" name="article_id" value="${article.getId()}">
@@ -45,7 +45,7 @@
     </div>
 <c:if test="${not empty sessionScope.login_id and sessionScope.is_active}">
 <form action="${pageContext.request.contextPath}/articles/" method="post">
-    <button id="write_article_static_button" type="submit" name="button" value="add_article"
+    <button id="write_article_static_button" type="submit" name="add_article"
             class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
         <i class="material-icons">add</i>
     </button>

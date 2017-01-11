@@ -4,6 +4,6 @@
     <title>Error</title>
 </head>
 <body>
-<div id="error_message">${error_message}</div>
+<div id="error_message">${exception.message}</div>
 </body>
 </html>

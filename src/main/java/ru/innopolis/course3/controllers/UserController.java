@@ -1,17 +1,16 @@
-package ru.innopolis.course3.servlets;
+package ru.innopolis.course3.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.user.User;
-import ru.innopolis.course3.models.user.UserService;
+import ru.innopolis.course3.services.UserService;
 
 import javax.servlet.http.HttpSession;
 
@@ -22,23 +21,25 @@ import static ru.innopolis.course3.utils.Utils.getHashAndSaltArray;
  */
 @Controller
 @RequestMapping("/users/")
-public class UserController {
+public class UserController extends BaseController {
+
+    private UserService userService;
 
     @Autowired
     @Qualifier("userService")
-    private UserService userService;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     @RequestMapping(path = "/")
-    public String showUsers(Model model, HttpSession session) {
+    public String showUsers(Model model, HttpSession session) throws DBException {
         if (session.getAttribute("login_id") == null ||
                 session.getAttribute("is_admin") == null) {
             return "../home";
         }
-        try {
-            model.addAttribute("users",userService.getAllUsers());
-        } catch (DBException e) {
-            return "../error_page";
-        }
+
+        model.addAttribute("users",userService.getAllUsers());
+
         return "users";
     }
 
@@ -52,22 +53,14 @@ public class UserController {
 
     @RequestMapping(params = "confirm_add_user",
             method = RequestMethod.POST)
-    public String confirmAddUser(@Validated User user,
-                                 BindingResult bindingResult,
-                                 HttpSession session) {
-        if (bindingResult.hasErrors()) {
-            return "../error_page";
-        }
+    public String confirmAddUser(@ModelAttribute(name = "user") User user,
+                                 HttpSession session) throws DBException {
         if (session.getAttribute("login_id") == null ||
                 session.getAttribute("is_admin") == null) {
             return "../home";
         }
 
-        try {
-            userService.addNewUser(handleAddUser(user));
-        } catch (DBException e) {
-            return "../error_page";
-        }
+        userService.addNewUser(handleAddUser(user));
 
         return "redirect:/users/";
     }
@@ -75,12 +68,10 @@ public class UserController {
     @RequestMapping(params = "delete_user",
             method = RequestMethod.POST)
     public String deleteUser(@RequestParam(name = "user_id", defaultValue = "0") int userId,
-                             @RequestParam(name = "user_version", defaultValue = "0") int userVersion) {
-        try {
-            userService.removeUserById(userId, userVersion);
-        } catch (DBException e) {
-            return "../error_page";
-        }
+                             @RequestParam(name = "user_version", defaultValue = "0") int userVersion) throws DBException {
+
+        userService.removeUserById(userId, userVersion);
+
         return "redirect:/users/";
     }
 
@@ -88,12 +79,10 @@ public class UserController {
             method = RequestMethod.POST)
     public String editUser(@RequestParam(name = "user_id", defaultValue = "0") int userId,
                            @RequestParam(name = "user_version", defaultValue = "0") int userVersion,
-                           Model model) {
-        try {
-            model.addAttribute("user", userService.getUserById(userId));
-        } catch (DBException e) {
-            return "../error_page";
-        }
+                           Model model) throws DBException {
+
+        model.addAttribute("user", userService.getUserById(userId));
+
         return "edit_user";
     }
 
@@ -104,20 +93,16 @@ public class UserController {
                              @RequestParam(name = "user_name", defaultValue = "") String name,
                              @RequestParam(name = "user_password", defaultValue = "") String password,
                              @RequestParam(name = "user_is_admin", defaultValue = "false") boolean isAdmin,
-                             @RequestParam(name = "user_is_active", defaultValue = "false") boolean isActive) {
+                             @RequestParam(name = "user_is_active", defaultValue = "false") boolean isActive) throws DBException {
         User user = getUpdateUser(userId,
                 userVersion,
                 name,
                 password,
                 isAdmin,
                 isActive);
-        try {
-            userService.updateUser(user);
-            if (password != null && !password.isEmpty()) {
-                userService.changeUsersPassword(password, user);
-            }
-        } catch (DBException e) {
-            return "../error_page";
+        userService.updateUser(user);
+        if (password != null && !password.isEmpty()) {
+            userService.changeUsersPassword(password, user);
         }
         return "redirect:/users/";
     }

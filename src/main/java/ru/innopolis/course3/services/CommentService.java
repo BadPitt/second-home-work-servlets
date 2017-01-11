@@ -1,12 +1,12 @@
-package ru.innopolis.course3.models.comment;
+package ru.innopolis.course3.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.innopolis.course3.models.DBException;
-import ru.innopolis.course3.models.Dao;
+import ru.innopolis.course3.models.comment.Comment;
+import ru.innopolis.course3.models.comment.CommentDao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,11 +47,6 @@ public class CommentService {
 
 
     public List<Comment> getCommentsByArticleId(int id) throws DBException {
-        /* FIXME: Aspect changes my dao to proxy objects! They aren't instances of CommentDaoImpl */
-        //if (commentDao instanceof CommentDao) {
-            return ((CommentDao) commentDao).getByArticleId(id);
-        //} else {
-            //return new ArrayList<>();
-        //}
+        return commentDao.getByArticleId(id);
     }
 }

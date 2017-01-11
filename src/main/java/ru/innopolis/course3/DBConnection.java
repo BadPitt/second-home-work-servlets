@@ -19,6 +19,7 @@ import java.sql.*;
  *
  * @author Danil Popov
  */
+@Deprecated
 public class DBConnection {
 
     private static final Logger logger = LoggerFactory.getLogger(DBConnection.class);

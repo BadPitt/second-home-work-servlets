@@ -1,10 +1,12 @@
-package ru.innopolis.course3.models.user;
+package ru.innopolis.course3.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.Dao;
+import ru.innopolis.course3.models.user.User;
+import ru.innopolis.course3.models.user.UserDao;
 
 import java.util.List;
 
@@ -41,12 +43,7 @@ public class UserService {
     }
 
     public User getUserByName(String name) throws DBException {
-        //if (userDao instanceof UserDao) {
-            return ((UserDao) userDao).getByName(name);
-        //} else {
-            //return null;
-        //}
-        //return userDao.getByName(name);
+        return userDao.getByName(name);
     }
 
     public List<User> getAllUsers() throws DBException {
@@ -54,9 +51,6 @@ public class UserService {
     }
 
     public void changeUsersPassword(String pass, User user) throws DBException {
-        //if (userDao instanceof UserDao) {
-            ((UserDao) userDao).changePassword(pass, user);
-        //}
-        //userDao.changePassword(pass, user);
+        userDao.changePassword(pass, user);
     }
 }

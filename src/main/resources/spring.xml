@@ -19,8 +19,8 @@
 
     <!--<aop:spring-configured/>-->
 
-    <!--
 
+<!--
     <aop:aspectj-autoproxy />
 
     <context:annotation-config/>
@@ -53,8 +53,8 @@
           class="org.springframework.jdbc.core.JdbcTemplate">
         <constructor-arg ref="dataSource" />
     </bean>
--->
 
+-->
 
 
 

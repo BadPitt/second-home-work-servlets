@@ -1,17 +1,16 @@
-package ru.innopolis.course3.servlets;
+package ru.innopolis.course3.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.user.User;
-import ru.innopolis.course3.models.user.UserService;
+import ru.innopolis.course3.services.UserService;
 
 import javax.servlet.http.HttpSession;
 
@@ -23,11 +22,15 @@ import static ru.innopolis.course3.utils.Utils.isPassEquals;
  */
 @Controller
 @RequestMapping("/auth/")
-public class AuthController {
+public class AuthController extends BaseController {
+
+    private UserService userService;
 
     @Autowired
     @Qualifier("userService")
-    private UserService userService;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     @RequestMapping("/")
     public String showLogin(Model model) {
@@ -42,33 +45,21 @@ public class AuthController {
     }
 
     @RequestMapping(params = "confirm_login")
-    public String login(@Validated User user,
-                        BindingResult bindingResult,
-                        HttpSession session) {
-        if (bindingResult.hasErrors()) {
-            return "redirect:/";
-        }
-        try {
-            handleLogin(session, user);
-        } catch (DBException e) {
-            return "redirect:../error_page";
-        }
+    public String login(@ModelAttribute(name = "user") User user,
+                        HttpSession session) throws DBException {
+
+        handleLogin(session, user);
+
         return "redirect:../home";
     }
 
     @RequestMapping(params = "confirm_reg",
             method = RequestMethod.POST)
-    public String registration(@Validated User user,
-                               BindingResult bindingResult,
-                               HttpSession session) {
-        if (bindingResult.hasErrors()) {
-            return "reg";
-        }
-        try {
-            handleRegistration(user, session);
-        } catch (DBException e) {
-            return "redirect:../error_page";
-        }
+    public String registration(@ModelAttribute(name = "user") User user,
+                               HttpSession session) throws DBException {
+
+        handleRegistration(user, session);
+
         return "redirect:../home";
     }
 
@@ -81,12 +72,10 @@ public class AuthController {
 
     @RequestMapping(params = "change_password",
             method = RequestMethod.POST)
-    public String changePassword(HttpSession session, Model model) {
-        try {
-            setUser(session, model);
-        } catch (DBException e) {
-            return "../error_page";
-        }
+    public String changePassword(HttpSession session, Model model) throws DBException {
+
+        setUser(session, model);
+
         return "../change_password";
     }
 
@@ -95,12 +84,10 @@ public class AuthController {
     public String confirmChangePassword(
             @RequestParam(name = "user_id", defaultValue = "0") int userId,
             @RequestParam(name = "user_version", defaultValue = "0") int userVersion,
-            @RequestParam(name = "user_password", defaultValue = "") String password) {
-        try {
-            changePassword(userId, userVersion, password);
-        } catch (DBException e) {
-            return "../error_page";
-        }
+            @RequestParam(name = "user_password", defaultValue = "") String password) throws DBException {
+
+        changePassword(userId, userVersion, password);
+
         return "../home";
     }
 
