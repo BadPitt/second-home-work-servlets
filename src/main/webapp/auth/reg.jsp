@@ -44,6 +44,9 @@
         </button>
         <input type="hidden" name="confirm_reg">
     </div>
+    <input type="hidden"
+           name="${_csrf.parameterName}"
+           value="${_csrf.token}"/>
 </sf:form>
 <script language="javascript">
     var submitcount = 0;

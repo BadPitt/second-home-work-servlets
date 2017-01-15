@@ -7,8 +7,7 @@
     <title>Edit article</title>
 </head>
 <body>
-<c:if test="${not empty sessionScope.login_id and sessionScope.is_active}">
-    <%@include file='/resources/header_template.jsp'%>
+<%@include file='/resources/header_template.jsp'%>
     <sf:form action="${pageContext.request.contextPath}/articles/"
              modelAttribute="article"
              method="post">
@@ -33,7 +32,7 @@
                     <sf:input path="id"
                               type="hidden"
                               name="article_id" value="${article.getId()}"/>
-                    <input type="hidden" name="article_user_id" value="${article.getAuthor().getId()}">
+                    <input type="hidden" name="article_user_name" value="${article.getAuthor().getName()}">
                     <sf:input path="date"
                               type="hidden"
                               name="article_date" value="${article.getDate()}"/>
@@ -45,6 +44,5 @@
             </tr>
         </table>
     </sf:form>
-</c:if>
 </body>
 </html>

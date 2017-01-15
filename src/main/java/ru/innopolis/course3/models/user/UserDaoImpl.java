@@ -24,27 +24,27 @@ import java.util.List;
 public class UserDaoImpl implements UserDao {
 
     private static final String ADD_USER = "INSERT INTO P_USER " +
-            " (NAME, PASSWORD, SALT, IS_ACTIVE, IS_ADMIN, VERSION) " +
-            " VALUES (?, ?, ?, ?, ?, ?);";
+            " (NAME, PASSWORD, enabled, ROLE_ID, VERSION) " +
+            " VALUES (?, ?, ?, ?, ?);";
     private static final String UPDATE_USER = "UPDATE P_USER " +
             " SET NAME=?, " +
-            " IS_ACTIVE=?, " +
-            " IS_ADMIN=?, " +
+            " enabled=?, " +
+            " ROLE_ID=?, " +
             " VERSION=?" +
             " WHERE USER_ID=? AND VERSION=?;";
     private static final String CHANGE_PASSWORD = "UPDATE P_USER " +
-            " SET PASSWORD=?, SALT=?, VERSION=?" +
+            " SET PASSWORD=?, VERSION=?" +
             " WHERE USER_ID=? AND VERSION=?;";
     private static final String DELETE_USER = "DELETE FROM P_USER " +
             "WHERE USER_ID=? AND VERSION=?;";
     private static final String GET_ALL_USERS = "SELECT " +
-            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD, SALT, VERSION " +
+            " USER_ID, NAME, enabled, ROLE_ID, PASSWORD, VERSION " +
             " FROM P_USER";
     private static final String GET_USER_BY_ID = "SELECT " +
-            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD, SALT, VERSION " +
+            " USER_ID, NAME, enabled, ROLE_ID, PASSWORD, VERSION " +
             " FROM P_USER WHERE USER_ID=?;";
     private static final String GET_USER_BY_NAME = "SELECT " +
-            " USER_ID, NAME, IS_ACTIVE, IS_ADMIN, PASSWORD, SALT, VERSION " +
+            " USER_ID, NAME, enabled, ROLE_ID, PASSWORD, VERSION " +
             " FROM P_USER WHERE NAME=?;";
 
     private JdbcTemplate jdbcTemplate;
@@ -65,9 +65,8 @@ public class UserDaoImpl implements UserDao {
         jdbcTemplate.update(ADD_USER,
                 o.getName(),
                 o.getPassword(),
-                o.getSalt(),
                 o.getIsActive(),
-                o.getIsAdmin(),
+                2, // ROLE_USER
                 o.getVersion());
     }
 
@@ -81,7 +80,7 @@ public class UserDaoImpl implements UserDao {
         jdbcTemplate.update(UPDATE_USER,
                 o.getName(),
                 o.getIsActive(),
-                o.getIsAdmin(),
+                o.getRoleId(),
                 o.getVersion() + 1,
                 o.getId(),
                 o.getVersion());
@@ -117,10 +116,9 @@ public class UserDaoImpl implements UserDao {
                             user.setId(result.getInt(1));
                             user.setName(result.getString(2));
                             user.setIsActive(result.getBoolean(3));
-                            user.setIsAdmin(result.getBoolean(4));
+                            user.setRoleId(result.getInt(4));
                             user.setPassword(result.getString(5));
-                            user.setSalt(result.getString(6));
-                            user.setVersion(result.getLong(7));
+                            user.setVersion(result.getLong(6));
                             list.add(user);
                         } while (result.next());
                         return list;
@@ -144,10 +142,9 @@ public class UserDaoImpl implements UserDao {
                         user.setId(result.getInt(1));
                         user.setName(result.getString(2));
                         user.setIsActive(result.getBoolean(3));
-                        user.setIsAdmin(result.getBoolean(4));
+                        user.setRoleId(result.getInt(4));
                         user.setPassword(result.getString(5));
-                        user.setSalt(result.getString(6));
-                        user.setVersion(result.getLong(7));
+                        user.setVersion(result.getLong(6));
                         return user;
                     }
                 },
@@ -169,10 +166,9 @@ public class UserDaoImpl implements UserDao {
                         user.setId(result.getInt(1));
                         user.setName(result.getString(2));
                         user.setIsActive(result.getBoolean(3));
-                        user.setIsAdmin(result.getBoolean(4));
+                        user.setRoleId(result.getInt(4));
                         user.setPassword(result.getString(5));
-                        user.setSalt(result.getString(6));
-                        user.setVersion(result.getLong(7));
+                        user.setVersion(result.getLong(6));
                         return user;
                     }
                 },
@@ -188,11 +184,10 @@ public class UserDaoImpl implements UserDao {
      *                      something goes wrong
      */
     public void changePassword(String password, User user) throws DBException {
-        String[] hashAndSaltArray = Utils.getHashAndSaltArray(password);
+        String hash = Utils.getPasswordHash(password);
 
         jdbcTemplate.update(CHANGE_PASSWORD,
-                hashAndSaltArray[0],
-                hashAndSaltArray[1],
+                hash,
                 user.getVersion() + 1,
                 user.getId(),
                 user.getVersion());

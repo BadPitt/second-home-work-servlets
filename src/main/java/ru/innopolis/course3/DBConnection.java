@@ -2,6 +2,8 @@ package ru.innopolis.course3;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.innopolis.course3.models.DBException;
 
 import javax.naming.Context;

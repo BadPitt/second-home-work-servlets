@@ -54,7 +54,7 @@ public class DaoTests {
         user.setId(1);
         user.setName("Mikola");
         user.setIsActive(true);
-        user.setIsAdmin(true);
+        user.setRoleId(1);
         userDao.add(user);
 
         User userFromBd = userDao.getById(1);
@@ -67,7 +67,7 @@ public class DaoTests {
         user.setId(1);
         user.setName("Mikola");
         user.setIsActive(true);
-        user.setIsAdmin(true);
+        user.setRoleId(1);
         user.setVersion(1);
         userDao.add(user);
 
@@ -83,12 +83,12 @@ public class DaoTests {
         user.setId(1);
         user.setName("Mikola");
         user.setIsActive(true);
-        user.setIsAdmin(true);
+        user.setRoleId(1);
         userDao.add(user);
 
         user.setName("Test");
         user.setIsActive(false);
-        user.setIsAdmin(false);
+        user.setRoleId(1);
         userDao.update(user);
 
         User updatedUser = userDao.getById(1);

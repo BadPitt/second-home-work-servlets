@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -19,11 +20,11 @@
         </thead>
         <tbody>
         <c:forEach var="user" items="${users}">
-            <form method="post">
+            <sf:form method="post">
                 <tr>
                     <td>${user.getId()}</td>
                     <td class="mdl-data-table__cell--non-numeric">${user.getName()}</td>
-                    <td class="mdl-data-table__cell--non-numeric">${user.getIsAdmin()}</td>
+                    <td class="mdl-data-table__cell--non-numeric">${user.getRoleId()}</td>
                     <td class="mdl-data-table__cell--non-numeric">${user.getIsActive()}</td>
                     <td class="mdl-data-table__cell--non-numeric">
                         <button type="submit" name="edit_user">Edit</button>
@@ -34,15 +35,15 @@
                     <input type="hidden" name="user_id" value="${user.getId()}">
                     <input type="hidden" name="user_version" value="${user.getVersion()}">
                 </tr>
-            </form>
+            </sf:form>
         </c:forEach>
         </tbody>
-        <form method="post">
+        <sf:form method="post">
             <button id="write_article_static_button" type="submit" name="add_user"
                     class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
                 <i class="material-icons">add</i>
             </button>
-        </form>
+        </sf:form>
     </table>
 </div>
 </body>

@@ -2,6 +2,7 @@ package ru.innopolis.course3.models.comment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -33,16 +34,16 @@ public class CommentDaoImpl implements CommentDao {
             " WHERE COMMENT_ID = ? AND UPDATE_DATE=?;";
     private static final String GET_ALL_COMMENTS = "SELECT " +
             " C.COMMENT_ID, C.SOURCE, C.DATE, C.ARTICLE_ID, C.USER_ID, " +
-            " U.NAME, U.IS_ACTIVE, U.IS_ADMIN, C.UPDATE_DATE" +
+            " U.NAME, U.enabled, U.ROLE_ID, C.UPDATE_DATE" +
             " FROM COMMENT C join P_USER U on C.USER_ID=U.USER_ID;";
     private static final String GET_COMMENT_BY_ID = "SELECT " +
             " C.COMMENT_ID, C.SOURCE, C.DATE, C.ARTICLE_ID, C.USER_ID, " +
-            " U.NAME, U.IS_ACTIVE, U.IS_ADMIN, C.UPDATE_DATE" +
+            " U.NAME, U.enabled, U.ROLE_ID, C.UPDATE_DATE" +
             " FROM COMMENT C join P_USER U on C.USER_ID=U.USER_ID " +
             " WHERE C.COMMENT_ID = ?;";
     private static final String GET_ALL_COMMENTS_BY_ARTICLE = "SELECT " +
             " C.COMMENT_ID, C.SOURCE, C.DATE, C.ARTICLE_ID, C.USER_ID, " +
-            " U.NAME, U.IS_ACTIVE, U.IS_ADMIN, C.UPDATE_DATE" +
+            " U.NAME, U.enabled, U.ROLE_ID, C.UPDATE_DATE" +
             " FROM COMMENT C join P_USER U on C.USER_ID=U.USER_ID" +
             " WHERE C.ARTICLE_ID=?;";
 
@@ -104,29 +105,35 @@ public class CommentDaoImpl implements CommentDao {
      */
     @Override
     public List<Comment> getAll() throws DBException {
-        return jdbcTemplate.queryForObject(GET_ALL_COMMENTS,
-                new RowMapper<List<Comment>>() {
-                    @Override
-                    public List<Comment> mapRow(ResultSet result, int rowNum) throws SQLException {
-                        List<Comment> list = new ArrayList<>();
-                        do {
-                            Comment comment = new Comment();
-                            comment.setId(result.getInt(1));
-                            comment.setSource(result.getString(2));
-                            comment.setDate(result.getLong(3));
-                            comment.setArticleId(result.getInt(4));
-                            User user = new User();
-                            user.setId(result.getInt(5));
-                            user.setName(result.getString(6));
-                            user.setIsActive(result.getBoolean(7));
-                            user.setIsAdmin(result.getBoolean(8));
-                            comment.setUser(user);
-                            comment.setUpdateDate(result.getLong(9));
-                            list.add(comment);
-                        } while (result.next());
-                        return list;
-                    }
-                });
+        List<Comment> list = new ArrayList<>();
+        try {
+            list = jdbcTemplate.queryForObject(GET_ALL_COMMENTS,
+                    new RowMapper<List<Comment>>() {
+                        @Override
+                        public List<Comment> mapRow(ResultSet result, int rowNum) throws SQLException {
+                            List<Comment> list = new ArrayList<>();
+                            do {
+                                Comment comment = new Comment();
+                                comment.setId(result.getInt(1));
+                                comment.setSource(result.getString(2));
+                                comment.setDate(result.getLong(3));
+                                comment.setArticleId(result.getInt(4));
+                                User user = new User();
+                                user.setId(result.getInt(5));
+                                user.setName(result.getString(6));
+                                user.setIsActive(result.getBoolean(7));
+                                user.setRoleId(result.getInt(8));
+                                comment.setUser(user);
+                                comment.setUpdateDate(result.getLong(9));
+                                list.add(comment);
+                            } while (result.next());
+                            return list;
+                        }
+                    });
+        } catch (EmptyResultDataAccessException e) {
+
+        }
+        return list;
     }
 
     /**
@@ -136,41 +143,12 @@ public class CommentDaoImpl implements CommentDao {
      */
     @Override
     public Comment getById(int id) throws DBException {
-        return jdbcTemplate.queryForObject(GET_COMMENT_BY_ID,
-                new RowMapper<Comment>() {
-                    @Override
-                    public Comment mapRow(ResultSet result, int rowNum) throws SQLException {
-                        Comment comment = new Comment();
-                        comment.setId(result.getInt(1));
-                        comment.setSource(result.getString(2));
-                        comment.setDate(result.getLong(3));
-                        comment.setArticleId(result.getInt(4));
-                        User user = new User();
-                        user.setId(result.getInt(5));
-                        user.setName(result.getString(6));
-                        user.setIsActive(result.getBoolean(7));
-                        user.setIsAdmin(result.getBoolean(8));
-                        comment.setUser(user);
-                        comment.setUpdateDate(result.getLong(9));
-                        return comment;
-                    }
-                },
-                id);
-    }
-
-    /**
-     * Gets all comment for current article
-     *
-     * @param id article's id
-     * @return {@code List<Comment>}
-     */
-    public List<Comment> getByArticleId(int id) throws DBException {
-        return jdbcTemplate.queryForObject(GET_ALL_COMMENTS_BY_ARTICLE,
-                new RowMapper<List<Comment>>() {
-                    @Override
-                    public List<Comment> mapRow(ResultSet result, int rowNum) throws SQLException {
-                        List<Comment> list = new ArrayList<>();
-                        do {
+        Comment comment = null;
+        try {
+            comment = jdbcTemplate.queryForObject(GET_COMMENT_BY_ID,
+                    new RowMapper<Comment>() {
+                        @Override
+                        public Comment mapRow(ResultSet result, int rowNum) throws SQLException {
                             Comment comment = new Comment();
                             comment.setId(result.getInt(1));
                             comment.setSource(result.getString(2));
@@ -180,14 +158,55 @@ public class CommentDaoImpl implements CommentDao {
                             user.setId(result.getInt(5));
                             user.setName(result.getString(6));
                             user.setIsActive(result.getBoolean(7));
-                            user.setIsAdmin(result.getBoolean(8));
+                            user.setRoleId(result.getInt(8));
                             comment.setUser(user);
                             comment.setUpdateDate(result.getLong(9));
-                            list.add(comment);
-                        } while (result.next());
-                        return list;
-                    }
-                },
-                id);
+                            return comment;
+                        }
+                    },
+                    id);
+        } catch (EmptyResultDataAccessException e) {
+
+        }
+        return comment;
+    }
+
+    /**
+     * Gets all comment for current article
+     *
+     * @param id article's id
+     * @return {@code List<Comment>}
+     */
+    public List<Comment> getByArticleId(int id) throws DBException {
+        List<Comment> list = new ArrayList<>();
+        try {
+            list = jdbcTemplate.queryForObject(GET_ALL_COMMENTS_BY_ARTICLE,
+                    new RowMapper<List<Comment>>() {
+                        @Override
+                        public List<Comment> mapRow(ResultSet result, int rowNum) throws SQLException {
+                            List<Comment> list = new ArrayList<>();
+                            do {
+                                Comment comment = new Comment();
+                                comment.setId(result.getInt(1));
+                                comment.setSource(result.getString(2));
+                                comment.setDate(result.getLong(3));
+                                comment.setArticleId(result.getInt(4));
+                                User user = new User();
+                                user.setId(result.getInt(5));
+                                user.setName(result.getString(6));
+                                user.setIsActive(result.getBoolean(7));
+                                user.setRoleId(result.getInt(8));
+                                comment.setUser(user);
+                                comment.setUpdateDate(result.getLong(9));
+                                list.add(comment);
+                            } while (result.next());
+                            return list;
+                        }
+                    },
+                    id);
+        } catch (EmptyResultDataAccessException e) {
+
+        }
+        return list;
     }
 }

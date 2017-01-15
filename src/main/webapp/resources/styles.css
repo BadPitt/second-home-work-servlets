@@ -27,6 +27,7 @@
 
 #article_card {
     width: 550px !important;
+    margin-bottom: 10px;
 }
 
 .articles-flex-container {

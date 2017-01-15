@@ -2,6 +2,13 @@ package ru.innopolis.course3.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,10 +19,10 @@ import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.user.User;
 import ru.innopolis.course3.services.UserService;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import static ru.innopolis.course3.utils.Utils.getHashAndSaltArray;
-import static ru.innopolis.course3.utils.Utils.isPassEquals;
+import static ru.innopolis.course3.utils.Utils.getPasswordHash;
 
 /**
  * @author Danil Popov
@@ -26,16 +33,18 @@ public class AuthController extends BaseController {
 
     private UserService userService;
 
+    private AuthenticationManager authenticationManager;
+
     @Autowired
     @Qualifier("userService")
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @RequestMapping("/")
-    public String showLogin(Model model) {
-        model.addAttribute("user", new User());
-        return "login";
+    @Autowired
+    @Qualifier("authManager")
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
     }
 
     @RequestMapping(params = "reg")
@@ -44,83 +53,70 @@ public class AuthController extends BaseController {
         return "reg";
     }
 
-    @RequestMapping(params = "confirm_login")
-    public String login(@ModelAttribute(name = "user") User user,
-                        HttpSession session) throws DBException {
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String login() {
+        return "login";
+    }
 
-        handleLogin(session, user);
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String postLogin() {
+        return "login";
+    }
 
-        return "redirect:../home";
+    @RequestMapping(value="/login", params = "logout", method = RequestMethod.GET)
+    public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null){
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        return "redirect:/home";
     }
 
     @RequestMapping(params = "confirm_reg",
             method = RequestMethod.POST)
     public String registration(@ModelAttribute(name = "user") User user,
-                               HttpSession session) throws DBException {
+                               HttpServletRequest request
+                               ) throws DBException {
+        String pass = user.getPassword();
 
-        handleRegistration(user, session);
+        handleRegistration(user);
+
+        autoLogin(user.getName(), pass, request);
 
         return "redirect:../home";
     }
 
-    @RequestMapping(params = "logout",
-            method = RequestMethod.POST)
-    public String logout(HttpSession session) {
-        handleLogout(session);
-        return "../home";
-    }
-
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping(params = "change_password",
             method = RequestMethod.POST)
-    public String changePassword(HttpSession session, Model model) throws DBException {
+    public String changePassword(Model model) throws DBException {
 
-        setUser(session, model);
+        User user = userService.getUserByName(getCurrentUserName());
+        model.addAttribute("user", user);
 
         return "../change_password";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping(params = "confirm_change_password",
             method = RequestMethod.POST)
     public String confirmChangePassword(
             @RequestParam(name = "user_id", defaultValue = "0") int userId,
             @RequestParam(name = "user_version", defaultValue = "0") int userVersion,
-            @RequestParam(name = "user_password", defaultValue = "") String password) throws DBException {
+            @RequestParam(name = "user_password", defaultValue = "") String password
+            ) throws DBException {
 
         changePassword(userId, userVersion, password);
 
         return "../home";
     }
 
-    private void handleRegistration(User user, HttpSession session) throws DBException {
-        String[] hashAndSalt = getHashAndSaltArray(user.getPassword());
-        user.setPassword(hashAndSalt[0]);
-        user.setSalt(hashAndSalt[1]);
+    private void handleRegistration(User user) throws DBException {
+        String hashAndSalt = getPasswordHash(user.getPassword());
+        user.setPassword(hashAndSalt);
         user.setIsActive(true);
 
         userService.addNewUser(user);
-
-        session.setAttribute("login_id", user.getName());
-        session.setAttribute("is_admin", false);
-        session.setAttribute("is_active", true);
-    }
-
-    boolean handleLogin(HttpSession session, User userFromForm) throws DBException {
-        User user = userService.getUserByName(userFromForm.getName());
-        boolean isPassEquals = isPassEquals(
-                userFromForm.getPassword(),
-                new String[] {user.getPassword(), user.getSalt()});
-        if (isPassEquals) {
-            session.setAttribute("login_id", user.getName());
-            session.setAttribute("is_admin", user.getIsAdmin());
-            session.setAttribute("is_active", user.getIsActive());
-        }
-        return isPassEquals;
-    }
-
-    void handleLogout(HttpSession session) {
-        session.removeAttribute("login_id");
-        session.removeAttribute("is_admin");
-        session.removeAttribute("is_active");
     }
 
     void changePassword(int userId,
@@ -130,9 +126,18 @@ public class AuthController extends BaseController {
         userService.changeUsersPassword(password, user);
     }
 
-    void setUser(HttpSession session, Model model) throws DBException {
-        String name = (String) session.getAttribute("login_id");
-        User user = userService.getUserByName(name);
-        model.addAttribute("user", user);
+    private void autoLogin(String name,
+                           String pass,
+                           HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(name, pass);
+
+        // generate session if one doesn't exist
+        request.getSession();
+
+        token.setDetails(new WebAuthenticationDetails(request));
+        Authentication authenticatedUser = authenticationManager.authenticate(token);
+
+        SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
     }
 }

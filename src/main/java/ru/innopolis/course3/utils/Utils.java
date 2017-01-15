@@ -25,12 +25,12 @@ public final class Utils {
      * Compares hash from DB with user password
      *
      * @param userPass user's password
-     * @param hashAndSaltFromDb {@code String[]} user's password hash and salt from DB
+     * @param hashFromDb {@code String[]} user's password hash and salt from DB
      * @return true if user password's hash and hash from DB are equal
      */
-    public static boolean isPassEquals(String userPass, String[] hashAndSaltFromDb) {
+    public static boolean isPassEquals(String userPass, String hashFromDb) {
         String userHash = null;
-        String salt = hashAndSaltFromDb[1];
+        String salt = hashFromDb.substring(0, 31);
 
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -43,7 +43,7 @@ public final class Utils {
             logger.error("there isn\'t crypto algorithm", e);
         }
 
-        return hashAndSaltFromDb[0].equals(userHash);
+        return hashFromDb.equals(salt + userHash);
     }
 
     /**
@@ -53,10 +53,9 @@ public final class Utils {
      * @return {@code String[]} which contains password's hash
      *          {@code String[0]} and salt {@code String[1]}
      */
-    public static String[] getHashAndSaltArray(String pass) {
+    public static String getPasswordHash(String pass) {
         String hash = null;
         String salt = null;
-        String[] hashAndSalt = new String[2];
 
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -73,10 +72,7 @@ public final class Utils {
             logger.error("there isn\'t crypto algorithm", e);
         }
 
-        hashAndSalt[0] = hash;
-        hashAndSalt[1] = salt;
-
-        return hashAndSalt;
+        return salt + hash;
     }
 
     /**

@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -7,7 +8,7 @@
 </head>
 <body>
 <%@include file='resources/header_template.jsp'%>
-    <form name="Change" class="login-form" action="${pageContext.request.contextPath}/auth/" method="post">
+    <sf:form name="Change" class="login-form" action="${pageContext.request.contextPath}/auth/" method="post">
         <div id="body_content" class="mdl-card mdl-shadow--2dp">
             <div id="article_title" class="mdl-card__title mdl-card--expand">
                 <h2 class="mdl-card__title-text">Change password</h2>
@@ -35,7 +36,7 @@
         <input name="user_id" type="hidden" value="${user.getId()}">
         <input name="user_version" type="hidden" value="${user.getVersion()}">
         </div>
-    </form>
+    </sf:form>
 <script language="javascript">
     var submitcount = 0;
 

@@ -2,6 +2,9 @@ package ru.innopolis.course3.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,7 +20,6 @@ import ru.innopolis.course3.services.CommentService;
 import ru.innopolis.course3.models.user.User;
 import ru.innopolis.course3.services.UserService;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -57,78 +59,72 @@ public class ArticlesController extends BaseController {
         return "articles";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping(params = "add_article")
-    public String addArticle(Model model, HttpSession session) {
-        if (session.getAttribute("login_id") == null) {
-            return "/articles/";
-        }
+    public String addArticle(Model model) {
         Article article = new Article();
         article.setAuthor(new User());
         model.addAttribute("article", article);
         return "add_article";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping(params = "confirm_add_article",
             method = RequestMethod.POST)
     public String confirmAddArticle(@ModelAttribute(name = "article") Article article,
-                                    HttpSession session) throws DBException {
-        String name = (String) session.getAttribute("login_id");
-        if (name != null ) {
-            long date = System.currentTimeMillis();
-            article.setAuthor(userService.getUserByName(name));
-            article.setDate(date);
-            article.setUpdateDate(date);
-            articleService.addNewArticle(article);
-        }
+                                    @RequestParam(name = "user_name", defaultValue = "") String authorName
+                                    ) throws DBException {
+
+        long date = System.currentTimeMillis();
+        article.setAuthor(userService.getUserByName(authorName));
+        article.setDate(date);
+        article.setUpdateDate(date);
+        articleService.addNewArticle(article);
+
         return "redirect:/articles/";
     }
 
-    @RequestMapping(params = "edit_article")
+    @PreAuthorize("isAuthenticated() and " +
+            "(hasRole('ROLE_ADMIN') or " +
+            "#authorName == principal.username)")
+    @RequestMapping(params = "edit_article", method = RequestMethod.POST)
     public String editArticle(@RequestParam(name = "article_id", defaultValue = "0") int articleId,
-                              @RequestParam(name = "user_id", defaultValue = "0") int userId,
+                              @RequestParam(name = "user_name", defaultValue = "") String authorName,
                               @RequestParam(name = "article_update_date", defaultValue = "0") long articleUpdateDate,
-                              Model model, HttpSession session) throws DBException {
-        if (session.getAttribute("login_id") == null) {
-            return "redirect:/articles/";
-        } else {
-            int currentUserId = userService.getUserByName(
-                    (String) session.getAttribute("login_id")
-            ).getId();
-            if (currentUserId == userId ||
-                    session.getAttribute("is_admin") != null) {
-                Article article = articleService.getArticleById(articleId);
-                model.addAttribute("article", article);
-                return "edit_article";
-            }
-        }
-        return "redirect:/articles/";
+                              Model model) throws DBException {
+
+        Article article = articleService.getArticleById(articleId);
+        model.addAttribute("article", article);
+
+        return "edit_article";
     }
 
+    @PreAuthorize("isAuthenticated() and " +
+            "(hasRole('ROLE_ADMIN') or " +
+            "#authorName == principal.username)")
     @RequestMapping(params = "confirm_edit_article",
             method = RequestMethod.POST)
     public String confirmEditArticle(@ModelAttribute(name = "model") Article article,
-                                     @RequestParam(name = "article_user_id", defaultValue = "0") int userId,
-                                    HttpSession session) throws DBException {
-        if (session.getAttribute("login_id") != null ) {
-                article.setAuthor(userService.getUserById(userId));
-        }
+                                     @RequestParam(name = "article_user_name", defaultValue = "") String authorName
+                                     ) throws DBException {
+
+        article.setAuthor(userService.getUserByName(authorName));
+        articleService.updateArticle(article);
+
         return "redirect:/articles/";
     }
 
+    @PreAuthorize("isAuthenticated() and " +
+            "(hasRole('ROLE_ADMIN') or " +
+            "#authorName == principal.username)")
     @RequestMapping(params = "delete_article",
             method = RequestMethod.POST)
     public String deleteArticle(@RequestParam(name = "article_id", defaultValue = "0") int articleId,
                                 @RequestParam(name = "user_id", defaultValue = "0") int userId,
-                                @RequestParam(name = "article_update_date", defaultValue = "0") long articleUpdateDate,
-                                HttpSession session) throws DBException {
-        String name = (String) session.getAttribute("login_id");
-        if (name != null) {
-            int currentUserId = userService.getUserByName(name).getId();
-            if (currentUserId == userId ||
-                    session.getAttribute("is_admin") != null) {
-                articleService.removeArticleById(articleId, articleUpdateDate);
-            }
-        }
+                                @RequestParam(name = "user_name", defaultValue = "") String authorName,
+                                @RequestParam(name = "article_update_date", defaultValue = "0") long articleUpdateDate
+                                ) throws DBException {
+        articleService.removeArticleById(articleId, articleUpdateDate);
         return "redirect:/articles/";
     }
 
@@ -144,17 +140,15 @@ public class ArticlesController extends BaseController {
         return "view_more_article";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @RequestMapping(params = "send_comment",
             method = RequestMethod.POST)
     public String addComment(@RequestParam(name = "article_id", defaultValue = "0") int articleId,
-                             @RequestParam(name = "comment_source", defaultValue = "") String source,
-                             HttpSession session) throws DBException {
-        String name = (String) session.getAttribute("login_id");
-        if (name == null) {
-            return "redirect:/articles/";
-        }
+                             @RequestParam(name = "comment_source", defaultValue = "") String source
+                             ) throws DBException {
+
         long date = System.currentTimeMillis();
-        User user = userService.getUserByName(name);
+        User user = userService.getUserByName(getCurrentUserName());
 
         Comment comment = new Comment();
         comment.setArticleId(articleId);
@@ -179,6 +173,9 @@ public class ArticlesController extends BaseController {
         return "redirect:/articles/?view_more&article_id=" + articleId;
     }
 
+    @PreAuthorize("isAuthenticated() and " +
+            "(hasRole('ROLE_ADMIN') or " +
+            "#authorName == principal.username)")
     @RequestMapping(params = "confirm_edit_comment",
             method = RequestMethod.POST)
     public String confirmEditComment(@RequestParam(name = "comment_id", defaultValue = "0") int commentId,
@@ -186,45 +183,35 @@ public class ArticlesController extends BaseController {
                                      @RequestParam(name = "comment_update_date", defaultValue = "0") long updateDate,
                                      @RequestParam(name = "comment_date", defaultValue = "0") long date,
                                      @RequestParam(name = "comment_source", defaultValue = "0") String source,
-                                     @RequestParam(name = "user_name", defaultValue = "") String authorName,
-                                     HttpSession session) throws DBException {
-        String name = (String) session.getAttribute("login_id");
-        if (name == null) {
-            return "redirect:/articles/";
-        }
-        if (name.equals(authorName) ||
-                session.getAttribute("is_admin") != null) {
+                                     @RequestParam(name = "user_name", defaultValue = "") String authorName
+                                     ) throws DBException {
 
-            Comment comment = new Comment();
-            comment.setArticleId(articleId);
-            comment.setUpdateDate(updateDate);
-            comment.setDate(date);
-            comment.setSource(source);
-            comment.setId(commentId);
-            comment.setUser(userService.getUserByName(authorName));
+        Comment comment = new Comment();
+        comment.setArticleId(articleId);
+        comment.setUpdateDate(updateDate);
+        comment.setDate(date);
+        comment.setSource(source);
+        comment.setId(commentId);
+        comment.setUser(userService.getUserByName(authorName));
 
-            commentService.updateComment(comment);
+        commentService.updateComment(comment);
 
-        }
         return "redirect:/articles/?view_more&article_id=" + articleId;
     }
 
+    @PreAuthorize("isAuthenticated() and " +
+            "(hasRole('ROLE_ADMIN') or " +
+            "#author == principal.username)")
     @RequestMapping(params = "delete_comment",
             method = RequestMethod.POST)
     public String deleteComment(@RequestParam(name = "comment_id", defaultValue = "0") int commentId,
                                 @RequestParam(name = "comment_update_date", defaultValue = "0") long updateDate,
                                 @RequestParam(name = "user_name", defaultValue = "") String author,
-                                @RequestParam(name = "article_id", defaultValue = "0") int articleId,
-                                HttpSession session) throws DBException {
+                                @RequestParam(name = "article_id", defaultValue = "0") int articleId
+                                ) throws DBException {
 
-        String name = (String) session.getAttribute("login_id");
+        commentService.removeCommentById(commentId, updateDate);
 
-        if (name == null) {
-            return "redirect:/articles/";
-        }
-        if (name.equals(author) || session.getAttribute("is_admin") != null) {
-            commentService.removeCommentById(commentId, updateDate);
-        }
         return "redirect:/articles/?view_more&article_id=" + articleId;
     }
 }

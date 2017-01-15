@@ -2,6 +2,7 @@ package ru.innopolis.course3.models.article;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -33,11 +34,11 @@ public class ArticleDaoImpl implements ArticleDao {
             " WHERE ARTICLE_ID = ? AND UPDATE_DATE=?;";
     private static final String GET_ALL_ARTICLE = "SELECT " +
             " A.ARTICLE_ID, A.TITLE, A.SOURCE," +
-            " A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.IS_ADMIN, U.VERSION, A.UPDATE_DATE" +
+            " A.DATE, A.USER_ID, U.NAME, U.enabled, U.ROLE_ID, U.VERSION, A.UPDATE_DATE" +
             " FROM ARTICLE A join P_USER U on A.USER_ID=U.USER_ID;";
     private static final String GET_ARTICLE = "SELECT " +
             " A.ARTICLE_ID, A.TITLE, A.SOURCE," +
-            " A.DATE, A.USER_ID, U.NAME, U.IS_ACTIVE, U.IS_ADMIN, U.VERSION, A.UPDATE_DATE" +
+            " A.DATE, A.USER_ID, U.NAME, U.enabled, U.ROLE_ID, U.VERSION, A.UPDATE_DATE" +
             " FROM ARTICLE A join P_USER U on A.USER_ID=U.USER_ID " +
             " WHERE A.ARTICLE_ID = ?;";
 
@@ -99,30 +100,36 @@ public class ArticleDaoImpl implements ArticleDao {
      */
     @Override
     public List<Article> getAll() throws DBException {
-        return jdbcTemplate.queryForObject(GET_ALL_ARTICLE,
-                new RowMapper<List<Article>>() {
-                    @Override
-                    public List<Article> mapRow(ResultSet result, int rowNum) throws SQLException {
-                        List<Article> list = new ArrayList<>();
-                        do {
-                            Article article = new Article();
-                            article.setId(result.getInt(1));
-                            article.setTitle(result.getString(2));
-                            article.setSource(result.getString(3));
-                            article.setDate(result.getLong(4));
-                            User user = new User();
-                            user.setId(result.getInt(5));
-                            user.setName(result.getString(6));
-                            user.setIsActive(result.getBoolean(7));
-                            user.setIsAdmin(result.getBoolean(8));
-                            user.setVersion(result.getLong(9));
-                            article.setAuthor(user);
-                            article.setUpdateDate(result.getLong(10));
-                            list.add(article);
-                        } while (result.next());
-                        return list;
-                    }
-                });
+        List<Article> list = new ArrayList<>();
+        try {
+            list = jdbcTemplate.queryForObject(GET_ALL_ARTICLE,
+                    new RowMapper<List<Article>>() {
+                        @Override
+                        public List<Article> mapRow(ResultSet result, int rowNum) throws SQLException {
+                            List<Article> list = new ArrayList<>();
+                            do {
+                                Article article = new Article();
+                                article.setId(result.getInt(1));
+                                article.setTitle(result.getString(2));
+                                article.setSource(result.getString(3));
+                                article.setDate(result.getLong(4));
+                                User user = new User();
+                                user.setId(result.getInt(5));
+                                user.setName(result.getString(6));
+                                user.setIsActive(result.getBoolean(7));
+                                user.setRoleId(result.getInt(8));
+                                user.setVersion(result.getLong(9));
+                                article.setAuthor(user);
+                                article.setUpdateDate(result.getLong(10));
+                                list.add(article);
+                            } while (result.next());
+                            return list;
+                        }
+                    });
+        } catch (EmptyResultDataAccessException e) {
+
+        }
+        return list;
     }
 
     /**
@@ -132,26 +139,32 @@ public class ArticleDaoImpl implements ArticleDao {
      */
     @Override
     public Article getById(int id) throws DBException {
-        return jdbcTemplate.queryForObject(GET_ARTICLE,
-                new RowMapper<Article>() {
-                    @Override
-                    public Article mapRow(ResultSet result, int rowNum) throws SQLException {
-                        Article article = new Article();
-                        article.setId(result.getInt(1));
-                        article.setTitle(result.getString(2));
-                        article.setSource(result.getString(3));
-                        article.setDate(result.getLong(4));
-                        User user = new User();
-                        user.setId(result.getInt(5));
-                        user.setName(result.getString(6));
-                        user.setIsActive(result.getBoolean(7));
-                        user.setIsAdmin(result.getBoolean(8));
-                        user.setVersion(result.getLong(9));
-                        article.setAuthor(user);
-                        article.setUpdateDate(result.getLong(10));
-                        return article;
-                    }
-                },
-                id);
+        Article article = null;
+        try {
+            article = jdbcTemplate.queryForObject(GET_ARTICLE,
+                    new RowMapper<Article>() {
+                        @Override
+                        public Article mapRow(ResultSet result, int rowNum) throws SQLException {
+                            Article article = new Article();
+                            article.setId(result.getInt(1));
+                            article.setTitle(result.getString(2));
+                            article.setSource(result.getString(3));
+                            article.setDate(result.getLong(4));
+                            User user = new User();
+                            user.setId(result.getInt(5));
+                            user.setName(result.getString(6));
+                            user.setIsActive(result.getBoolean(7));
+                            user.setRoleId(result.getInt(8));
+                            user.setVersion(result.getLong(9));
+                            article.setAuthor(user);
+                            article.setUpdateDate(result.getLong(10));
+                            return article;
+                        }
+                    },
+                    id);
+        } catch (EmptyResultDataAccessException e) {
+
+        }
+        return article;
     }
 }

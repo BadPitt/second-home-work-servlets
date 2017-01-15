@@ -7,8 +7,9 @@
     <title>New article</title>
 </head>
 <body>
-<c:if test="${not empty sessionScope.login_id and sessionScope.is_active}">
     <%@include file='/resources/header_template.jsp'%>
+    <sec:authentication property="principal.username"
+                        var="name" scope="page"/>
     <sf:form action="${pageContext.request.contextPath}/articles/"
              modelAttribute="article"
              method="post">
@@ -26,10 +27,10 @@
             <tr>
                 <td>
                     <input type="submit" name="confirm_add_article">
+                    <input type="hidden" name="user_name" value="${name}">
                 </td>
             </tr>
         </table>
     </sf:form>
-</c:if>
 </body>
 </html>

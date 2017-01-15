@@ -2,6 +2,7 @@ package ru.innopolis.course3.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -14,7 +15,7 @@ import ru.innopolis.course3.services.UserService;
 
 import javax.servlet.http.HttpSession;
 
-import static ru.innopolis.course3.utils.Utils.getHashAndSaltArray;
+import static ru.innopolis.course3.utils.Utils.getPasswordHash;
 
 /**
  * @author Danil Popov
@@ -31,18 +32,16 @@ public class UserController extends BaseController {
         this.userService = userService;
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(path = "/")
     public String showUsers(Model model, HttpSession session) throws DBException {
-        if (session.getAttribute("login_id") == null ||
-                session.getAttribute("is_admin") == null) {
-            return "../home";
-        }
 
         model.addAttribute("users",userService.getAllUsers());
 
         return "users";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(params = "add_user",
             method = RequestMethod.POST)
     public String addUser(Model model) {
@@ -51,20 +50,18 @@ public class UserController extends BaseController {
         return "add_user";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(params = "confirm_add_user",
             method = RequestMethod.POST)
     public String confirmAddUser(@ModelAttribute(name = "user") User user,
                                  HttpSession session) throws DBException {
-        if (session.getAttribute("login_id") == null ||
-                session.getAttribute("is_admin") == null) {
-            return "../home";
-        }
 
         userService.addNewUser(handleAddUser(user));
 
         return "redirect:/users/";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(params = "delete_user",
             method = RequestMethod.POST)
     public String deleteUser(@RequestParam(name = "user_id", defaultValue = "0") int userId,
@@ -75,6 +72,7 @@ public class UserController extends BaseController {
         return "redirect:/users/";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(params = "edit_user",
             method = RequestMethod.POST)
     public String editUser(@RequestParam(name = "user_id", defaultValue = "0") int userId,
@@ -86,19 +84,20 @@ public class UserController extends BaseController {
         return "edit_user";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(params = "confirm_edit_user",
             method = RequestMethod.POST)
     public String confirmEditUser(@RequestParam(name = "user_id", defaultValue = "0") int userId,
                              @RequestParam(name = "user_version", defaultValue = "0") int userVersion,
                              @RequestParam(name = "user_name", defaultValue = "") String name,
                              @RequestParam(name = "user_password", defaultValue = "") String password,
-                             @RequestParam(name = "user_is_admin", defaultValue = "false") boolean isAdmin,
+                             @RequestParam(name = "user_is_admin", defaultValue = "2") int roleId,
                              @RequestParam(name = "user_is_active", defaultValue = "false") boolean isActive) throws DBException {
         User user = getUpdateUser(userId,
                 userVersion,
                 name,
                 password,
-                isAdmin,
+                roleId,
                 isActive);
         userService.updateUser(user);
         if (password != null && !password.isEmpty()) {
@@ -111,12 +110,12 @@ public class UserController extends BaseController {
                                   int userVersion,
                                   String name,
                                   String password,
-                                  boolean isAdmin,
+                                  int roleId,
                                   boolean isActive) {
         User user = new User();
         user.setId(userId);
         user.setName(name);
-        user.setIsAdmin(isAdmin);
+        user.setRoleId(roleId);
         user.setIsActive(isActive);
         user.setVersion(userVersion);
 
@@ -124,9 +123,8 @@ public class UserController extends BaseController {
     }
 
     private User handleAddUser(User user) {
-        String[] hashAndSalt = getHashAndSaltArray(user.getPassword());
-        user.setPassword(hashAndSalt[0]);
-        user.setSalt(hashAndSalt[1]);
+        String hashAndSalt = getPasswordHash(user.getPassword());
+        user.setPassword(hashAndSalt);
         return user;
     }
 }

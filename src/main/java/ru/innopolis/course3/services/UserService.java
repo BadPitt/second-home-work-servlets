@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.innopolis.course3.models.DBException;
-import ru.innopolis.course3.models.Dao;
 import ru.innopolis.course3.models.user.User;
 import ru.innopolis.course3.models.user.UserDao;
 

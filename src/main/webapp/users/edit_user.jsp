@@ -1,5 +1,6 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form"%>
 <html>
 <head>
     <%@ include file="/resources/head_styles.jsp" %>
@@ -7,7 +8,7 @@
 </head>
 <body>
 <%@include file='/resources/header_template.jsp' %>
-<form name="Edit" class="login-form" method="post">
+<sf:form name="Edit" class="login-form" method="post">
     <div id="body_content" class="mdl-card mdl-shadow--2dp">
         <div id="article_title" class="mdl-card__title mdl-card--expand">
             <h2 class="mdl-card__title-text">Edit user</h2>
@@ -25,8 +26,8 @@
                    class="mdl-textfield__input"
                    type="text"
                    id="iuadmin"
-                   value="${user.getIsAdmin()}">
-            <label class="mdl-textfield__label" for="iuadmin">Is user admin:</label>
+                   value="${user.getRoleId()}">
+            <label class="mdl-textfield__label" for="iuadmin">User's role:</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <input name="user_is_active"
@@ -60,7 +61,7 @@
         <input name="user_id" type="hidden" value="${user.getId()}">
         <input name="user_version" type="hidden" value="${user.getVersion()}">
     </div>
-</form>
+</sf:form>
 <script language="javascript">
     var submitcount = 0;
 

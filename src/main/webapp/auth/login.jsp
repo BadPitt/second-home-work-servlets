@@ -8,33 +8,43 @@
 </head>
 <body>
 <%@include file='/resources/header_template.jsp' %>
-<sf:form class="login-form" method="post" modelAttribute="user">
+<div class="login-form">
     <div id="body_content" class="mdl-card mdl-shadow--2dp">
         <div id="article_title" class="mdl-card__title mdl-card--expand">
             <h2 class="mdl-card__title-text">Login</h2>
         </div>
+        <form class="login-form"
+              action="/login"
+              method="post">
         <div class="mdl-textfield mdl-js-textfield">
-            <sf:input path="name"
-                      name="user_name"
-                      class="mdl-textfield__input"
-                      type="text" id="login"/>
+            <input name="username"
+                   class="mdl-textfield__input"
+                   type="text" id="login"/>
             <label class="mdl-textfield__label" for="login">Login...</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield">
-            <sf:input path="password"
-                      name="user_password"
-                      class="mdl-textfield__input"
-                      type="password" id="password"/>
+            <input name="password"
+                   class="mdl-textfield__input"
+                   type="password" id="password"/>
             <label class="mdl-textfield__label" for="password">Password...</label>
         </div>
         <button type="submit"
                 name="confirm_login"
                 class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
                 style="margin-bottom: 20px;">Confirm</button>
+            <input type="hidden"
+                   name="${_csrf.parameterName}"
+                   value="${_csrf.token}"/>
+            <input id="remember_me" name="_spring_security_remember_me"
+                   type="checkbox"/>
+            <label for="remember_me" class="inline">Remember me</label>
+        </form>
+        <sf:form action="/auth/">
         <button type="submit"
                 name="reg"
                 class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Registration</button>
+        </sf:form>
     </div>
-</sf:form>
+</div>
 </body>
 </html>

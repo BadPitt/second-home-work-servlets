@@ -28,21 +28,4 @@ public class CommentDaoChecker {
         }
         return retVal;
     }
-
-    @Pointcut("execution(* " +
-            "ru.innopolis.course3.models.comment.CommentDao.add(" +
-            "ru.innopolis.course3.models.comment.Comment)) && args(o) || " +
-            "execution(* " +
-            "ru.innopolis.course3.models.comment.CommentDao.update(" +
-            "ru.innopolis.course3.models.comment.Comment)) && args(o)")
-    public void checkArg(Comment o) {}
-
-    /* Will be invoked after around-method */
-    @Before("checkArg(o)")
-    public void checkCommentDaoArg(Comment o) throws DBException {
-        if (o == null) {
-            logger.error("Comment DAO null object exception");
-            throw new DBException();
-        }
-    }
 }

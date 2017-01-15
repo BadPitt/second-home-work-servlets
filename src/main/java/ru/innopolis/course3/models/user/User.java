@@ -13,8 +13,7 @@ public class User extends BaseModel {
     private int id;
     private String name;
     private String password;
-    private String salt;
-    private boolean isAdmin;
+    private int roleId;
     private boolean isActive;
     private long version;
 
@@ -42,12 +41,12 @@ public class User extends BaseModel {
         this.password = password;
     }
 
-    public boolean getIsAdmin() {
-        return isAdmin;
+    public int getRoleId() {
+        return roleId;
     }
 
-    public void setIsAdmin(boolean role) {
-        this.isAdmin = role;
+    public void setRoleId(int role) {
+        this.roleId = role;
     }
 
     public boolean getIsActive() {
@@ -64,13 +63,5 @@ public class User extends BaseModel {
 
     public void setVersion(long version) {
         this.version = version;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
     }
 }

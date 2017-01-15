@@ -3,7 +3,6 @@ package ru.innopolis.course3.models.user;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,22 +29,5 @@ public class UserDaoChecker {
             throw new DBException();
         }
         return retVal;
-    }
-
-    @Pointcut("execution(* " +
-            "ru.innopolis.course3.models.user.UserDao.add(" +
-            "ru.innopolis.course3.models.user.User)) && args(o) ||" +
-            "execution(* " +
-            "ru.innopolis.course3.models.user.UserDao.update(" +
-            "ru.innopolis.course3.models.user.User)) && args(o)")
-    public void checkArg(User o) {}
-
-    /* Will be invoked after around-method */
-    @Before("checkArg(o)")
-    public void checkUserDaoArg(User o) throws DBException {
-        if (o == null) {
-            logger.error("User DAO null object exception");
-            throw new DBException();
-        }
     }
 }

@@ -1,0 +1,100 @@
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns="http://www.springframework.org/schema/security"
+             xmlns:p="http://www.springframework.org/schema/p"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                http://www.springframework.org/schema/security
+                http://www.springframework.org/schema/security/spring-security-4.1.xsd">
+
+    <http>
+        <form-login login-page="/auth/login"
+                    username-parameter="username"
+                    password-parameter="password"
+                    authentication-success-forward-url="/home"
+                    authentication-failure-url="/auth/login?login_error=1"/>
+
+        <logout logout-url="/auth/login?logout"
+                logout-success-url="/home"/>
+
+        <intercept-url pattern="/resources/**" access="permitAll"/>
+        <intercept-url pattern="/auth/**" access="permitAll"/>
+        <intercept-url pattern="/home*" access="permitAll" />
+        <!--<intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')" />-->
+
+        <remember-me key="publishingKey"/>
+
+        <csrf/>
+    </http>
+
+    <global-method-security secured-annotations="enabled" />
+
+
+    <!--<http>-->
+    <!--<intercept-url pattern="/login" access="permitAll"/>-->
+    <!--<form-login login-page="login"-->
+    <!--default-target-url="/login"-->
+    <!--authentication-failure-url="/login?error=true"/>-->
+
+    <!--&lt;!&ndash; <logout logout-url="/logout"-->
+    <!--logout-success-url="/login"/>-->
+    <!--&ndash;&gt;-->
+    <!--<anonymous username="guest" granted-authority="ROLE_ANONYMOUS"/>-->
+
+    <!--&lt;!&ndash;<intercept-url pattern="/login" access="permitAll"/>&ndash;&gt;&lt;!&ndash;-->
+    <!--<intercept-url pattern="/logout" access="permitAll"/>&ndash;&gt;-->
+
+    <!--<remember-me/>-->
+
+    <!--</http>-->
+
+    <authentication-manager id="authManager">
+        <authentication-provider>
+            <password-encoder ref="encoder" />
+            <jdbc-user-service data-source-ref="dataSource"
+                               users-by-username-query=
+                                       "select name, password, enabled
+                                       from p_user
+                                       where name=?"
+                               authorities-by-username-query=
+                                       "select u.name, r.role
+                                       from p_user u join user_roles r on u.role_id = r.id
+                                       where u.name =?  " />
+            <!--<user-service>
+                <user name="admin"
+                      password="admin"
+                      authorities="ROLE_ADMIN,ROLE_USER"/>
+                <user name="student"
+                      password="student"
+                      authorities="ROLE_USER"/>
+                <user name="student2"
+                      password="student2"
+                      authorities="ROLE_USER"
+                      disabled="true"/>
+            </user-service>-->
+        </authentication-provider>
+    </authentication-manager>
+    <!--<beans:bean id="userDetailsService"
+                class="ru.innopolis.course3.services.UserService">
+
+    </beans:bean>
+                p:userDao="accountDao" />-->
+
+    <beans:bean id="encoder"
+                class="ru.innopolis.course3.utils.MyPassEncoder">
+    </beans:bean>
+
+    <!--<beans:bean id="saltSource"
+                class="org.springframework.security.authentication.dao.ReflectionSaltSource">
+        <beans:property name="userPropertyToUse" value="id"/>
+    </beans:bean>
+
+    <beans:bean class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+        <beans:property name="userDetailsService" ref="userService"/>
+        <beans:property name="passwordEncoder" ref="encoder"/>
+        <beans:property name="saltSource" ref="saltSource"/>
+    </beans:bean>
+
+    <custom-authentication-provider />-->
+
+</beans:beans>

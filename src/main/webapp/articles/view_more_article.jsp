@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -7,6 +8,11 @@
 </head>
 <body>
 <%@include file='/resources/header_template.jsp'%>
+<sec:authorize access="isAuthenticated()">
+    <sec:authentication property="principal.username"
+                        var="loginId" scope="request"/>
+    <sec:authorize access="hasRole('ROLE_ADMIN')" var="isAdmin"/>
+</sec:authorize>
 <form action="${pageContext.request.contextPath}/articles/" method="post">
     <div class="articles-flex-container">
         <div id="article_card" class="demo-card-square mdl-card mdl-shadow--2dp">
@@ -25,7 +31,7 @@
                 </h1>
             </div>
             <div class="mdl-card__actions mdl-card--border">
-                <c:if test="${article.getAuthor().getName() eq sessionScope.login_id or sessionScope.is_admin}">
+                <c:if test="${article.getAuthor().getName() eq loginId or isAdmin}">
                     <button type="submit" name="edit_article"
                             class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Edit</button>
                     <button type="submit" name="delete_article"
@@ -33,6 +39,10 @@
                 </c:if>
                 <input type="hidden" name="article_id" value="${article.getId()}">
                 <input type="hidden" name="article_update_date" value="${article.getUpdateDate()}">
+                <input type="hidden" name="user_name" value="${loginId}">
+                <input type="hidden"
+                       name="${_csrf.parameterName}"
+                       value="${_csrf.token}"/>
             </div>
         </div>
     </div>
@@ -61,7 +71,7 @@
             </h1>
         </div>
         <div class="mdl-card__actions mdl-card--border">
-            <c:if test="${comment.getUser().getName() eq sessionScope.login_id or sessionScope.is_admin}">
+            <c:if test="${comment.getUser().getName() eq loginId or isAdmin}">
                 <c:choose>
                     <c:when test="${editCommentId eq comment.getId()}">
                         <button type="submit"
@@ -84,12 +94,15 @@
             <input type="hidden" name="comment_date" value="${comment.getDate()}">
             <input type="hidden" name="comment_update_date" value="${comment.getUpdateDate()}">
             <input type="hidden" name="user_name" value="${comment.getUser().getName()}">
+            <input type="hidden"
+                   name="${_csrf.parameterName}"
+                   value="${_csrf.token}"/>
         </div>
     </div>
 
 </form>
 </c:forEach>
-<c:if test="${not empty sessionScope.login_id and sessionScope.is_active}">
+<c:if test="${not empty loginId}">
 <form action="${pageContext.request.contextPath}/articles/" method="post">
     <table>
         <tr>
@@ -102,6 +115,9 @@
             </td>
         </tr>
     </table>
+    <input type="hidden"
+           name="${_csrf.parameterName}"
+           value="${_csrf.token}"/>
 </form>
 </c:if>
 </body>
