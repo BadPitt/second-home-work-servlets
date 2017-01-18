@@ -36,7 +36,7 @@ public class UserController extends BaseController {
     @RequestMapping(path = "/")
     public String showUsers(Model model, HttpSession session) throws DBException {
 
-        model.addAttribute("users",userService.getAllUsers());
+        model.addAttribute("users",userService.getAllTransactionally());
 
         return "users";
     }
@@ -56,7 +56,7 @@ public class UserController extends BaseController {
     public String confirmAddUser(@ModelAttribute(name = "user") User user,
                                  HttpSession session) throws DBException {
 
-        userService.addNewUser(handleAddUser(user));
+        userService.addNewModelTransactionally(handleAddUser(user));
 
         return "redirect:/users/";
     }
@@ -67,7 +67,7 @@ public class UserController extends BaseController {
     public String deleteUser(@RequestParam(name = "user_id", defaultValue = "0") int userId,
                              @RequestParam(name = "user_version", defaultValue = "0") int userVersion) throws DBException {
 
-        userService.removeUserById(userId, userVersion);
+        userService.removeModelTransactionally(userId, userVersion);
 
         return "redirect:/users/";
     }
@@ -79,7 +79,7 @@ public class UserController extends BaseController {
                            @RequestParam(name = "user_version", defaultValue = "0") int userVersion,
                            Model model) throws DBException {
 
-        model.addAttribute("user", userService.getUserById(userId));
+        model.addAttribute("user", userService.getByIdTransactionally(userId));
 
         return "edit_user";
     }
@@ -99,7 +99,7 @@ public class UserController extends BaseController {
                 password,
                 roleId,
                 isActive);
-        userService.updateUser(user);
+        userService.updateTransactionally(user);
         if (password != null && !password.isEmpty()) {
             userService.changeUsersPassword(password, user);
         }
@@ -115,7 +115,7 @@ public class UserController extends BaseController {
         User user = new User();
         user.setId(userId);
         user.setName(name);
-        user.setRoleId(roleId);
+        //user.setRoleId(roleId);
         user.setIsActive(isActive);
         user.setVersion(userVersion);
 

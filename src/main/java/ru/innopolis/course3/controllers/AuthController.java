@@ -116,13 +116,13 @@ public class AuthController extends BaseController {
         user.setPassword(hashAndSalt);
         user.setIsActive(true);
 
-        userService.addNewUser(user);
+        userService.addNewModelTransactionally(user);
     }
 
     void changePassword(int userId,
                         int userVersion,
                         String password) throws DBException {
-        User user = userService.getUserById(userId);
+        User user = userService.getByIdTransactionally(userId);
         userService.changeUsersPassword(password, user);
     }
 

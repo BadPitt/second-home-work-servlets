@@ -59,6 +59,13 @@ public class Comment extends BaseModel {
         this.articleId = articleId;
     }
 
+    public long getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(long updateDate) {
+        this.updateDate = updateDate;
+    }
     /**
      *
      * @return {@code String} which represent
@@ -66,13 +73,5 @@ public class Comment extends BaseModel {
      */
     public String getFormattedDate() {
         return Utils.getFormattedDate(date);
-    }
-
-    public long getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(long updateDate) {
-        this.updateDate = updateDate;
     }
 }

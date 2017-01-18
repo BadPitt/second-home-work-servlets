@@ -6,9 +6,9 @@ import ru.innopolis.course3.models.Dao;
 /**
  * @author Danil Popov
  */
-public interface UserDao extends Dao<User> {
+public interface UserDao extends Dao<UserEntity> {
 
-    User getByName(String name) throws DBException;
+    UserEntity getByName(String name) throws DBException;
 
     void changePassword(String password, User user) throws DBException;
 }

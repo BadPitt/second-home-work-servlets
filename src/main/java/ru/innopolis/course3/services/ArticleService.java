@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.article.Article;
 import ru.innopolis.course3.models.article.ArticleDao;
+import ru.innopolis.course3.models.article.ArticleEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +17,7 @@ import java.util.List;
  * @author Danil Popov
  */
 @Service
-public class ArticleService {
+public class ArticleService extends BaseService<Article> {
 
     private ArticleDao articleDao;
 
@@ -25,23 +27,34 @@ public class ArticleService {
         this.articleDao = articleDao;
     }
 
-    public void addNewArticle(Article article) throws DBException {
-        articleDao.add(article);
+    @Override
+    protected void addNew(Article o) {
+        articleDao.add(ArticleEntity.getArticleEntity(o));
     }
 
-    public void removeArticleById(int id, long updateDate) throws DBException {
+    @Override
+    protected void removeById(int id, long updateDate) {
         articleDao.removeById(id, updateDate);
     }
 
-    public void updateArticle(Article article) throws DBException {
-        articleDao.update(article);
+    @Override
+    protected void update(Article o) {
+        articleDao.update(ArticleEntity.getArticleEntity(o));
     }
 
-    public Article getArticleById(int id) throws DBException {
-        return articleDao.getById(id);
+    @Override
+    protected Article getById(int id) throws DBException {
+        return ArticleEntity.getArticle(articleDao.getById(id));
     }
 
-    public List<Article> getAllArticles() throws DBException {
-        return articleDao.getAll();
+    @Override
+    protected List<Article> getAll() throws DBException {
+        List<ArticleEntity> entities = articleDao.getAll();
+        List<Article> articles = new ArrayList<>();
+
+        for (ArticleEntity entity: entities) {
+            articles.add(ArticleEntity.getArticle(entity));
+        }
+        return articles;
     }
 }

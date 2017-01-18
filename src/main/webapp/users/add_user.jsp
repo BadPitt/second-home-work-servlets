@@ -23,13 +23,13 @@
                 <label class="mdl-textfield__label" for="uname">Name:</label>
             </div>
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <sf:input path="roleId"
+                <%--<sf:input path="roleId"
                           name="user_is_admin"
                        class="mdl-textfield__input"
                        type="text"
                        id="iuadmin"
                        value=""/>
-                <label class="mdl-textfield__label" for="iuadmin">User's role:</label>
+                <label class="mdl-textfield__label" for="iuadmin">User's role:</label>--%>
             </div>
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <sf:input path="isActive"

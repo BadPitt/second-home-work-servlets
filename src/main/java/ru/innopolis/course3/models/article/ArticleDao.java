@@ -5,5 +5,5 @@ import ru.innopolis.course3.models.Dao;
 /**
  * @author Danil Popov
  */
-public interface ArticleDao extends Dao<Article> {
+public interface ArticleDao extends Dao<ArticleEntity> {
 }

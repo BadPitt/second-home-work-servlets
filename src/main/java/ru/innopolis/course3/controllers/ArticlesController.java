@@ -55,7 +55,7 @@ public class ArticlesController extends BaseController {
 
     @RequestMapping("/")
     public String showArticles(Model model) throws DBException {
-        model.addAttribute("articles", articleService.getAllArticles());
+        model.addAttribute("articles", articleService.getAllTransactionally());
         return "articles";
     }
 
@@ -79,7 +79,7 @@ public class ArticlesController extends BaseController {
         article.setAuthor(userService.getUserByName(authorName));
         article.setDate(date);
         article.setUpdateDate(date);
-        articleService.addNewArticle(article);
+        articleService.addNewModelTransactionally(article);
 
         return "redirect:/articles/";
     }
@@ -93,7 +93,7 @@ public class ArticlesController extends BaseController {
                               @RequestParam(name = "article_update_date", defaultValue = "0") long articleUpdateDate,
                               Model model) throws DBException {
 
-        Article article = articleService.getArticleById(articleId);
+        Article article = articleService.getByIdTransactionally(articleId);
         model.addAttribute("article", article);
 
         return "edit_article";
@@ -109,7 +109,7 @@ public class ArticlesController extends BaseController {
                                      ) throws DBException {
 
         article.setAuthor(userService.getUserByName(authorName));
-        articleService.updateArticle(article);
+        articleService.updateTransactionally(article);
 
         return "redirect:/articles/";
     }
@@ -124,7 +124,7 @@ public class ArticlesController extends BaseController {
                                 @RequestParam(name = "user_name", defaultValue = "") String authorName,
                                 @RequestParam(name = "article_update_date", defaultValue = "0") long articleUpdateDate
                                 ) throws DBException {
-        articleService.removeArticleById(articleId, articleUpdateDate);
+        articleService.removeModelTransactionally(articleId, articleUpdateDate);
         return "redirect:/articles/";
     }
 
@@ -132,7 +132,7 @@ public class ArticlesController extends BaseController {
     public String viewMoreArticle(@RequestParam(name = "article_id", defaultValue = "0") int articleId,
                                   Model model) throws DBException {
         List<Comment> comments = commentService.getCommentsByArticleId(articleId);
-        Article article = articleService.getArticleById(articleId);
+        Article article = articleService.getByIdTransactionally(articleId);
 
         model.addAttribute("article", article);
         model.addAttribute("comments", comments);
@@ -157,7 +157,7 @@ public class ArticlesController extends BaseController {
         comment.setDate(date);
         comment.setUpdateDate(date);
 
-        commentService.addNewComment(comment);
+        commentService.addNewModelTransactionally(comment);
 
         return "redirect:/articles/?view_more&article_id=" + articleId;
     }
@@ -194,7 +194,7 @@ public class ArticlesController extends BaseController {
         comment.setId(commentId);
         comment.setUser(userService.getUserByName(authorName));
 
-        commentService.updateComment(comment);
+        commentService.updateTransactionally(comment);
 
         return "redirect:/articles/?view_more&article_id=" + articleId;
     }
@@ -210,7 +210,7 @@ public class ArticlesController extends BaseController {
                                 @RequestParam(name = "article_id", defaultValue = "0") int articleId
                                 ) throws DBException {
 
-        commentService.removeCommentById(commentId, updateDate);
+        commentService.removeModelTransactionally(commentId, updateDate);
 
         return "redirect:/articles/?view_more&article_id=" + articleId;
     }

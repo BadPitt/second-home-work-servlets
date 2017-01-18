@@ -3,7 +3,7 @@ package ru.innopolis.course3.models;
 /**
  * @author Danil Popov
  */
-public class DBException extends Exception {
+public class DBException extends RuntimeException {
 
     public DBException() {
         super("Sorry, something went wrong, try later");

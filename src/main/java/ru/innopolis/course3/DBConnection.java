@@ -85,6 +85,40 @@ public class DBConnection {
     private static final String DROP_USER_TABLE = "DROP TABLE P_USER;";
     private static final String DROP_COMMENT_TABLE = "DROP TABLE COMMENT;";
 
+    private static final String CREATE_UPDATE_TRIGGER_USER = "create function inc_version() returns trigger as $inc_version$\n" +
+            "  begin\n" +
+            "    NEW.version := NEW.version + 1;\n" +
+            "    RETURN NEW;\n" +
+            "  end;\n" +
+            "$inc_version$ LANGUAGE plpgsql;\n" +
+            "\n" +
+            "create trigger inc_version before update on p_user\n" +
+            "  for EACH row EXECUTE PROCEDURE inc_version();";
+    private static final String CREATE_DATE_TRIGGER_FUNCTION = "create function create_date() returns trigger as $create_date$\n" +
+            "  DECLARE\n" +
+            "    cur_date BIGINT;" +
+            "  begin\n" +
+            "    SELECT (extract(epoch from now()) * 1000)::BIGINT INTO cur_date;\n" +
+            "    NEW.date := cur_date;\n" +
+            "    NEW.update_date := cur_date;" +
+            "    RETURN NEW;\n" +
+            "  end;\n" +
+            "$create_date$ LANGUAGE plpgsql;";
+    private static final String CREATE_DATE_TRIGGER_ARTICLE = "create trigger create_date before insert on article\n" +
+            "  for EACH row EXECUTE PROCEDURE create_date();";
+    private static final String CREATE_DATE_TRIGGER_COMMENT = "create trigger create_date before insert on comment\n" +
+            "  for EACH row EXECUTE PROCEDURE create_date();";
+    private static final String CREATE_UPDATE_DATE_TRIGGER_FUNCTION = "create function update_date() returns trigger as $update_date$\n" +
+            "  begin\n" +
+            "    NEW.update_date := (extract(epoch from now()) * 1000)::BIGINT;\n" +
+            "    RETURN NEW;\n" +
+            "  end;\n" +
+            "$update_date$ LANGUAGE plpgsql;";
+    private static final String CREATE_UPDATE_DATE_TRIGGER_ARTICLE = "create trigger create_date before update on article\n" +
+            "  for EACH row EXECUTE PROCEDURE update_date();";
+    private static final String CREATE_UPDATE_DATE_TRIGGER_COMMENT = "create trigger create_date before update on comment\n" +
+            "  for EACH row EXECUTE PROCEDURE update_date();";
+
     /**
      * Gets connection with DB or TestDB
      * according {@code isTest} flag

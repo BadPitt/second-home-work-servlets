@@ -1,16 +1,12 @@
 package ru.innopolis.course3.models.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.Dao;
 import ru.innopolis.course3.utils.Utils;
 
-import java.sql.*;
-import java.util.ArrayList;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -21,11 +17,12 @@ import java.util.List;
  * @see User
  */
 @Repository("userDao")
+@Transactional
 public class UserDaoImpl implements UserDao {
 
     private static final String ADD_USER = "INSERT INTO P_USER " +
-            " (NAME, PASSWORD, enabled, ROLE_ID, VERSION) " +
-            " VALUES (?, ?, ?, ?, ?);";
+            " (NAME, PASSWORD, enabled, VERSION) " +
+            " VALUES (?, ?, ?, ?);";
     private static final String UPDATE_USER = "UPDATE P_USER " +
             " SET NAME=?, " +
             " enabled=?, " +
@@ -33,57 +30,51 @@ public class UserDaoImpl implements UserDao {
             " VERSION=?" +
             " WHERE USER_ID=? AND VERSION=?;";
     private static final String CHANGE_PASSWORD = "UPDATE P_USER " +
-            " SET PASSWORD=?, VERSION=?" +
+            " SET PASSWORD=?" +
             " WHERE USER_ID=? AND VERSION=?;";
     private static final String DELETE_USER = "DELETE FROM P_USER " +
-            "WHERE USER_ID=? AND VERSION=?;";
+            " WHERE USER_ID=? AND VERSION=?;";
     private static final String GET_ALL_USERS = "SELECT " +
-            " USER_ID, NAME, enabled, ROLE_ID, PASSWORD, VERSION " +
-            " FROM P_USER";
+            " USER_ID, NAME, enabled, PASSWORD, VERSION " +
+            " FROM P_USER;";
     private static final String GET_USER_BY_ID = "SELECT " +
-            " USER_ID, NAME, enabled, ROLE_ID, PASSWORD, VERSION " +
+            " USER_ID, NAME, enabled, PASSWORD, VERSION " +
             " FROM P_USER WHERE USER_ID=?;";
     private static final String GET_USER_BY_NAME = "SELECT " +
-            " USER_ID, NAME, enabled, ROLE_ID, PASSWORD, VERSION " +
+            " USER_ID, NAME, enabled, PASSWORD, VERSION " +
             " FROM P_USER WHERE NAME=?;";
 
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    @Qualifier("jdbcTemplate")
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+   // @PersistenceContext(type = PersistenceContextType.EXTENDED)
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
-     * @see Dao#add(ru.innopolis.course3.models.BaseModel)
+     * @see Dao#add(ru.innopolis.course3.models.BaseEntity)
      *
      * @param o User which will add
      */
     @Override
-    public void add(User o) throws DBException {
-        jdbcTemplate.update(ADD_USER,
-                o.getName(),
-                o.getPassword(),
-                o.getIsActive(),
-                2, // ROLE_USER
-                o.getVersion());
+    //@Transactional(transactionManager = "transactionManager")
+    public void add(UserEntity o) {
+        //entityManager.persist(o);
+        entityManager.createNativeQuery(ADD_USER)
+                .setParameter(1, o.getName())
+                .setParameter(2, o.getPassword())
+                .setParameter(3, o.getIsActive())
+                .setParameter(4, o.getVersion())
+                .executeUpdate();
     }
 
     /**
-     * @see Dao#update(ru.innopolis.course3.models.BaseModel)
+     * @see Dao#update(ru.innopolis.course3.models.BaseEntity)
      *
      * @param o User which will update
      */
     @Override
-    public void update(User o) throws DBException {
-        jdbcTemplate.update(UPDATE_USER,
-                o.getName(),
-                o.getIsActive(),
-                o.getRoleId(),
-                o.getVersion() + 1,
-                o.getId(),
-                o.getVersion());
+    //@Transactional(transactionManager = "transactionManager")
+    public void update(UserEntity o) {
+        entityManager.merge(o);
+        // TODO: fix increment version this;
         o.setVersion(o.getVersion() + 1);
     }
 
@@ -93,10 +84,12 @@ public class UserDaoImpl implements UserDao {
      * @param id User's id for removing from DB User with this id
      */
     @Override
-    public void removeById(int id, long version) throws DBException {
-        jdbcTemplate.update(DELETE_USER,
-                id,
-                version);
+    //@Transactional(transactionManager = "transactionManager")
+    public void removeById(int id, long version) {
+        entityManager.createNativeQuery(DELETE_USER)
+                .setParameter(1, id)
+                .setParameter(2, version)
+                .executeUpdate();
     }
 
     /**
@@ -105,25 +98,12 @@ public class UserDaoImpl implements UserDao {
      * @return {@code List<User>} which contains all Users from DB
      */
     @Override
-    public List<User> getAll() throws DBException {
-        return jdbcTemplate.queryForObject(GET_ALL_USERS,
-                new RowMapper<List<User>>() {
-                    @Override
-                    public List<User> mapRow(ResultSet result, int rowNum) throws SQLException {
-                        List<User> list = new ArrayList<>();
-                        do {
-                            User user = new User();
-                            user.setId(result.getInt(1));
-                            user.setName(result.getString(2));
-                            user.setIsActive(result.getBoolean(3));
-                            user.setRoleId(result.getInt(4));
-                            user.setPassword(result.getString(5));
-                            user.setVersion(result.getLong(6));
-                            list.add(user);
-                        } while (result.next());
-                        return list;
-                    }
-                });
+    //@Transactional(transactionManager = "transactionManager",
+            //readOnly = true)
+    public List<UserEntity> getAll() {
+        Query query = entityManager.createNativeQuery(GET_ALL_USERS, UserEntity.class);
+        List<UserEntity> list = query.getResultList();
+        return list;
     }
 
     /**
@@ -133,46 +113,32 @@ public class UserDaoImpl implements UserDao {
      * @return User with current id
      */
     @Override
-    public User getById(int id) throws DBException {
-        return jdbcTemplate.queryForObject(GET_USER_BY_ID,
-                new RowMapper<User>() {
-                    @Override
-                    public User mapRow(ResultSet result, int rowNum) throws SQLException {
-                        User user = new User();
-                        user.setId(result.getInt(1));
-                        user.setName(result.getString(2));
-                        user.setIsActive(result.getBoolean(3));
-                        user.setRoleId(result.getInt(4));
-                        user.setPassword(result.getString(5));
-                        user.setVersion(result.getLong(6));
-                        return user;
-                    }
-                },
-                id);
+    //@Transactional(transactionManager = "transactionManager",
+            //readOnly = true)
+    public UserEntity getById(int id) {
+        UserEntity user = (UserEntity) entityManager
+                .createNativeQuery(GET_USER_BY_ID, UserEntity.class)
+                .setParameter(1, id)
+                .getSingleResult();
+        //entityManager.close();
+        return user;
     }
 
     /**
      * Finds User by name
      *
      * @param name
-     * @return {@code User}
+     * @return {@code UserEntity}
      */
-    public User getByName(String name) throws DBException {
-        return jdbcTemplate.queryForObject(GET_USER_BY_NAME,
-                new RowMapper<User>() {
-                    @Override
-                    public User mapRow(ResultSet result, int rowNum) throws SQLException {
-                        User user = new User();
-                        user.setId(result.getInt(1));
-                        user.setName(result.getString(2));
-                        user.setIsActive(result.getBoolean(3));
-                        user.setRoleId(result.getInt(4));
-                        user.setPassword(result.getString(5));
-                        user.setVersion(result.getLong(6));
-                        return user;
-                    }
-                },
-                name);
+
+    //@Transactional(transactionManager = "transactionManager",
+            //readOnly = true)
+    public UserEntity getByName(String name) {
+        Query query = entityManager.createNativeQuery(GET_USER_BY_NAME, UserEntity.class);
+        UserEntity user = (UserEntity) query.setParameter(1, name)
+                .getSingleResult();
+        //entityManager.close();
+        return user;
     }
 
     /**
@@ -183,14 +149,18 @@ public class UserDaoImpl implements UserDao {
      * @throws DBException  exception throws when
      *                      something goes wrong
      */
-    public void changePassword(String password, User user) throws DBException {
+
+    //@Transactional(transactionManager = "transactionManager")
+    public void changePassword(String password, User user) {
         String hash = Utils.getPasswordHash(password);
 
-        jdbcTemplate.update(CHANGE_PASSWORD,
-                hash,
-                user.getVersion() + 1,
-                user.getId(),
-                user.getVersion());
+        entityManager.createNativeQuery(CHANGE_PASSWORD)
+                .setParameter(1, hash)
+                .setParameter(2, user.getId())
+                .setParameter(3, user.getVersion())
+                .executeUpdate();
+
+        //entityManager.close();
 
         user.setVersion(user.getVersion() + 1);
     }

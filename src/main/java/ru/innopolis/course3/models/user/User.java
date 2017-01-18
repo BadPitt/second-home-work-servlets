@@ -1,6 +1,9 @@
 package ru.innopolis.course3.models.user;
 
 import ru.innopolis.course3.models.BaseModel;
+import ru.innopolis.course3.models.role.Role;
+
+import java.util.List;
 
 /**
  * POJO for user entity
@@ -8,14 +11,15 @@ import ru.innopolis.course3.models.BaseModel;
  * @see BaseModel
  * @author Danil Popov
  */
-public class User extends BaseModel {
+public class User extends BaseModel {//implements UserDetails {
 
     private int id;
     private String name;
     private String password;
-    private int roleId;
     private boolean isActive;
     private long version;
+
+    private List<Role> authorites;
 
     public int getId() {
         return id;
@@ -41,14 +45,6 @@ public class User extends BaseModel {
         this.password = password;
     }
 
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(int role) {
-        this.roleId = role;
-    }
-
     public boolean getIsActive() {
         return isActive;
     }
@@ -64,4 +60,43 @@ public class User extends BaseModel {
     public void setVersion(long version) {
         this.version = version;
     }
+
+    public List<Role> getAuthorites() {
+        return authorites;
+    }
+
+    public void setAuthorites(List<Role> authorites) {
+        this.authorites = authorites;
+    }
+
+
+    /*@Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorites;
+    }
+
+    @Override
+    public String getUsername() {
+        return name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }*/
 }

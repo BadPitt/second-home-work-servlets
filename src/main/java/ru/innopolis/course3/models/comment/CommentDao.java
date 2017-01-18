@@ -8,8 +8,8 @@ import java.util.List;
 /**
  * @author Danil Popov
  */
-public interface CommentDao extends Dao<Comment> {
+public interface CommentDao extends Dao<CommentEntity> {
 
-    List<Comment> getByArticleId(int id) throws DBException;
+    List<CommentEntity> getByArticleId(int id) throws DBException;
 
 }
