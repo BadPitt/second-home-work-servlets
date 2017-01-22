@@ -9,6 +9,7 @@ import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.comment.Comment;
 import ru.innopolis.course3.models.comment.CommentDao;
 import ru.innopolis.course3.models.comment.CommentEntity;
+import ru.innopolis.course3.models.comment.CommentRepository;
 import ru.innopolis.course3.models.user.UserEntity;
 
 import java.util.ArrayList;
@@ -22,37 +23,37 @@ import java.util.List;
 @Service
 public class CommentService extends BaseService<Comment> {
 
-    private CommentDao commentDao;
+    private CommentRepository repository;
 
     @Autowired
-    @Qualifier("commentDao")
-    public void setCommentDao(CommentDao commentDao) {
-        this.commentDao = commentDao;
+    public void setRepository(CommentRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     protected void addNew(Comment o) {
-        commentDao.add(CommentEntity.getCommentEntity(o));
+        repository.save(CommentEntity.getCommentEntity(o));
     }
 
     @Override
-    protected void removeById(int id, long updateDate) {
-        commentDao.removeById(id, updateDate);
+    protected void removeById(long id, long updateDate) {
+        //updateDate
+        repository.delete(id);
     }
 
     @Override
     protected void update(Comment o) {
-        commentDao.update(CommentEntity.getCommentEntity(o));
+        repository.save(CommentEntity.getCommentEntity(o));
     }
 
     @Override
-    protected Comment getById(int id) {
-        return CommentEntity.getComment(commentDao.getById(id));
+    protected Comment getById(long id) {
+        return CommentEntity.getComment(repository.findOne(id));
     }
 
     @Override
     protected List<Comment> getAll() {
-        List<CommentEntity> entities = commentDao.getAll();
+        Iterable<CommentEntity> entities = repository.findAll();
         List<Comment> comments = new ArrayList<>();
 
         for (CommentEntity entity: entities) {
@@ -62,12 +63,13 @@ public class CommentService extends BaseService<Comment> {
     }
 
 
-    public List<Comment> getCommentsByArticleId(int id) throws DBException {
+    public List<Comment> getCommentsByArticleId(long id) throws DBException {
         return template.execute(new TransactionCallback<List<Comment>>() {
             public List<Comment> doInTransaction(TransactionStatus txStatus) {
                 List<Comment> comments = new ArrayList<>();
                 try {
-                    List<CommentEntity> entities = commentDao.getByArticleId(id);
+                    Iterable<CommentEntity> entities =
+                            repository.findByArticleId(id);
 
                     for (CommentEntity entity: entities) {
                         comments.add(CommentEntity.getComment(entity));

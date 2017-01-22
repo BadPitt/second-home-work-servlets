@@ -1,67 +1,123 @@
 package ru.innopolis.course3;
 
 import org.junit.*;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.article.Article;
-import ru.innopolis.course3.models.article.ArticleDaoImpl;
 import ru.innopolis.course3.models.comment.Comment;
-import ru.innopolis.course3.models.comment.CommentDaoImpl;
+import ru.innopolis.course3.models.role.RoleEntity;
 import ru.innopolis.course3.models.user.User;
-import ru.innopolis.course3.models.user.UserDaoImpl;
+import ru.innopolis.course3.models.user.UserEntity;
+import ru.innopolis.course3.models.user.UserRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static ru.innopolis.course3.DBConnection.*;
 
 /**
  * @author Danil Popov
  */
+
+@ContextConfiguration("classpath:application.xml")
+@RunWith(SpringJUnit4ClassRunner.class)
 public class DaoTests {
 
-    private static UserDaoImpl userDao = new UserDaoImpl();
-    private static ArticleDaoImpl articleDao = new ArticleDaoImpl();
-    private static CommentDaoImpl commentDao = new CommentDaoImpl();
+    private static final String CREATE_USER_TABLE = "CREATE TABLE P_USER" +
+            "(" +
+            " USER_ID SERIAL NOT NULL PRIMARY KEY," +
+            " NAME TEXT UNIQUE NOT NULL," +
+            " PASSWORD TEXT," +
+            " SALT TEXT," +
+            " IS_ACTIVE BOOLEAN," +
+            " IS_ADMIN BOOLEAN," +
+            " VERSION BIGINT" +
+            " )";
+    private static final String CREATE_ARTICLE_TABLE = "CREATE TABLE ARTICLE" +
+            "(" +
+            " ARTICLE_ID SERIAL NOT NULL PRIMARY KEY," +
+            " TITLE TEXT," +
+            " SOURCE TEXT," +
+            " DATE BIGINT," +
+            " USER_ID INTEGER," +
+            " UPDATE_DATE BIGINT," +
+            " FOREIGN KEY (USER_ID) REFERENCES P_USER (USER_ID)" +
+            " MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE" +
+            " )";
+    private static final String CREATE_COMMENT_TABLE = "CREATE TABLE COMMENT (" +
+            "  COMMENT_ID SERIAL PRIMARY KEY NOT NULL," +
+            "  SOURCE TEXT," +
+            "  DATE BIGINT," +
+            "  ARTICLE_ID INTEGER," +
+            "  USER_ID INTEGER," +
+            "  UPDATE_DATE BIGINT," +
+            "  FOREIGN KEY (USER_ID) REFERENCES P_USER (USER_ID)" +
+            "  MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE," +
+            "  FOREIGN KEY (ARTICLE_ID) REFERENCES ARTICLE (ARTICLE_ID)" +
+            "  MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE" +
+            ")";
+    private static final String DROP_ARTICLE_TABLE = "DROP TABLE ARTICLE";
+    private static final String DROP_USER_TABLE = "DROP TABLE P_USER";
+    private static final String DROP_COMMENT_TABLE = "DROP TABLE COMMENT";
 
-    @BeforeClass
-    public static void setConnectionTest() {
-        DBConnection.isTest = true;
-    }
+    @Autowired
+    private UserRepository repository;
 
-    @AfterClass
-    public static void setConnectionAfterTest() {
-        DBConnection.isTest = false;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Before
     public void init() {
-        createUserTable();
-        createArticleTable();
-        createCommentTable();
+        entityManager.createNativeQuery(CREATE_USER_TABLE)
+                .executeUpdate();
+        entityManager.createNativeQuery(CREATE_ARTICLE_TABLE)
+                .executeUpdate();
+        entityManager.createNativeQuery(CREATE_COMMENT_TABLE)
+                .executeUpdate();
     }
 
     @After
     public void drop() {
-        dropCommentTable();
-        dropArticleTable();
-        dropUserTable();
+        entityManager.createNativeQuery(DROP_USER_TABLE)
+                .executeUpdate();
+        entityManager.createNativeQuery(DROP_ARTICLE_TABLE)
+                .executeUpdate();
+        entityManager.createNativeQuery(DROP_COMMENT_TABLE)
+                .executeUpdate();
     }
 
     @Test
     public void userAddGet() throws DBException {
-        User user = new User();
-        user.setId(1);
+
+        List<RoleEntity> roles = new ArrayList<>();
+        RoleEntity role = new RoleEntity();
+        role.setId(1L);
+        role.setName("ROLE_TEST1");
+        roles.add(role);
+        role = new RoleEntity();
+        role.setId(2L);
+        role.setName("ROLE_TEST2");
+        roles.add(role);
+
+        UserEntity user = new UserEntity();
+        user.setId(1L);
         user.setName("Mikola");
         user.setIsActive(true);
-        user.setRoleId(1);
-        userDao.add(user);
+        user.setPassword("000101010011");
+        user.setRoles(roles);
 
-        User userFromBd = userDao.getById(1);
+        repository.save(user);
+
+        UserEntity userFromBd = repository.findOne(1L);
         assertEquals(user, userFromBd);
     }
 
-    @Test
+    /*@Test
     public void userRemove() throws DBException {
         User user = new User();
         user.setId(1);
@@ -331,5 +387,5 @@ public class DaoTests {
 
         List<Comment> commentsFromDb = commentDao.getAll();
         assertEquals(comments, commentsFromDb);
-    }
+    }*/
 }

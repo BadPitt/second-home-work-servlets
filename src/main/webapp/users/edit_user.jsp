@@ -26,7 +26,7 @@
                    class="mdl-textfield__input"
                    type="text"
                    id="iuadmin"
-                   value="${user.getAuthorites()}">
+                   value="${user.getRoles()}">
             <label class="mdl-textfield__label" for="iuadmin">User's role:</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">

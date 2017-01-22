@@ -12,18 +12,18 @@ import ru.innopolis.course3.utils.Utils;
  */
 public class Comment extends BaseModel {
 
-    private int id;
+    private long id;
     private String source;
     private long date;
     private User user;
-    private int articleId;
+    private long articleId;
     private long updateDate;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -51,11 +51,11 @@ public class Comment extends BaseModel {
         this.user = user;
     }
 
-    public int getArticleId() {
+    public long getArticleId() {
         return articleId;
     }
 
-    public void setArticleId(int articleId) {
+    public void setArticleId(long articleId) {
         this.articleId = articleId;
     }
 

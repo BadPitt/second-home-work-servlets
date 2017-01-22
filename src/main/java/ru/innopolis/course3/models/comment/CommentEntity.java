@@ -11,21 +11,21 @@ import javax.persistence.*;
 @Entity(name = "comment")
 public class CommentEntity implements BaseEntity {
 
-    private int id;
+    private Long id;
     private String source;
     private long date;
     private UserEntity user;
-    private int articleId;
+    private Long articleId;
     private long updateDate;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,7 +47,7 @@ public class CommentEntity implements BaseEntity {
         this.date = date;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     public UserEntity getUser() {
         return user;
@@ -58,11 +58,11 @@ public class CommentEntity implements BaseEntity {
     }
 
     @Column(name = "article_id")
-    public int getArticleId() {
+    public Long getArticleId() {
         return articleId;
     }
 
-    public void setArticleId(int articleId) {
+    public void setArticleId(Long articleId) {
         this.articleId = articleId;
     }
 

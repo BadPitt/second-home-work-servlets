@@ -25,9 +25,9 @@ public abstract class BaseService<T extends BaseModel> {
     }
 
     protected abstract void addNew(T o);
-    protected abstract void removeById(int id, long version);
+    protected abstract void removeById(long id, long version);
     protected abstract void update(T o);
-    protected abstract T getById(int id);
+    protected abstract T getById(long id);
     protected abstract List<T> getAll();
 
     public void addNewModelTransactionally(T o) {
@@ -44,7 +44,7 @@ public abstract class BaseService<T extends BaseModel> {
         });
     }
 
-    public void removeModelTransactionally(int id, long version) {
+    public void removeModelTransactionally(long id, long version) {
         template.execute(new TransactionCallback<Void>() {
             public Void doInTransaction(TransactionStatus txStatus) {
                 try {
@@ -58,7 +58,7 @@ public abstract class BaseService<T extends BaseModel> {
         });
     }
 
-    public T getByIdTransactionally(int id) {
+    public T getByIdTransactionally(long id) {
         return template.execute(new TransactionCallback<T>() {
             public T doInTransaction(TransactionStatus txStatus) {
                 T model = null;

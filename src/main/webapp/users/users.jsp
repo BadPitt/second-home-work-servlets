@@ -24,7 +24,7 @@
                 <tr>
                     <td>${user.getId()}</td>
                     <td class="mdl-data-table__cell--non-numeric">${user.getName()}</td>
-                    <td class="mdl-data-table__cell--non-numeric">${user.getAuthorites()}</td>
+                    <td class="mdl-data-table__cell--non-numeric">${user.getRoles()}</td>
                     <td class="mdl-data-table__cell--non-numeric">${user.getIsActive()}</td>
                     <td class="mdl-data-table__cell--non-numeric">
                         <button type="submit" name="edit_user">Edit</button>

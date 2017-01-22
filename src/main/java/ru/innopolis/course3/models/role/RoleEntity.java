@@ -1,10 +1,12 @@
 package ru.innopolis.course3.models.role;
 
+import org.springframework.security.core.GrantedAuthority;
 import ru.innopolis.course3.models.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,18 +14,18 @@ import java.util.List;
  * @author Danil Popov
  */
 @Entity(name = "user_roles")
-public class RoleEntity implements BaseEntity {//implements GrantedAuthority {
+public class RoleEntity implements BaseEntity, GrantedAuthority {
 
-    private int id;
+    private Long id;
     private String name;
 
     @Id
     @Column(name = "id")
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -35,11 +37,6 @@ public class RoleEntity implements BaseEntity {//implements GrantedAuthority {
     public void setName(String name) {
         this.name = name;
     }
-
-    /*@Override
-    public String getAuthority() {
-        return name;
-    }*/
 
     public static List<Role> getRoles(List<RoleEntity> entities) {
         List<Role> roles = new ArrayList<>();
@@ -61,5 +58,11 @@ public class RoleEntity implements BaseEntity {//implements GrantedAuthority {
             entities.add(entity);
         }
         return entities;
+    }
+
+    @Transient
+    @Override
+    public String getAuthority() {
+        return getName();
     }
 }

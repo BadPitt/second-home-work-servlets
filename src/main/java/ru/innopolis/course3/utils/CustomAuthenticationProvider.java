@@ -1,39 +1,52 @@
 package ru.innopolis.course3.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import ru.innopolis.course3.models.user.User;
-import ru.innopolis.course3.services.UserService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
 /**
  * @author Danil Popov
  */
-/*
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    @Autowired
-    private UserService userService;
+    private AuthenticationUserService userService;
+    private PasswordEncoder encoder;
 
+    @Autowired
+    public void setUserService(AuthenticationUserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    @Qualifier("encoder")
+    public void setEncoder(PasswordEncoder encoder) {
+        this.encoder = encoder;
+    }
+
+    @Transactional
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = (String) authentication.getCredentials();
 
-        User user = userService.getUserByName(username);
+        UserDetails user = userService.loadUserByUsername(username);
 
-        if (user == null || !user.getUsername().equalsIgnoreCase(username)) {
+        if (user == null || !user.getUsername().equals(username)) {
             throw new BadCredentialsException("Username not found.");
         }
 
-        if (!password.equals(user.getPassword())) {
+        if (!encoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Wrong password.");
         }
 
@@ -45,5 +58,4 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public boolean supports(Class<?> arg0) {
         return true;
     }
-
-}*/
+}

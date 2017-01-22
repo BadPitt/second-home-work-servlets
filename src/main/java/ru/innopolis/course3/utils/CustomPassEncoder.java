@@ -2,7 +2,6 @@ package ru.innopolis.course3.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.xml.bind.DatatypeConverter;
@@ -14,10 +13,10 @@ import java.security.SecureRandom;
 /**
  * @author Danil Popov
  */
-public class MyPassEncoder implements PasswordEncoder {
+public class CustomPassEncoder implements PasswordEncoder {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(MyPassEncoder.class);
+    private static final Logger logger = LoggerFactory.getLogger(CustomPassEncoder.class);
 
     @Override
     public String encode(CharSequence rawPassword) {

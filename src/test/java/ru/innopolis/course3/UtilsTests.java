@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class UtilsTests {
 
-    @Test
+    /*@Test
     public void getHashTest() {
         String pass1 = "weakPass";
         String pass2 = new String("weakPass");
@@ -41,7 +41,7 @@ public class UtilsTests {
         assertTrue(Utils.isPassEquals(pass1, hashAndSalt1));
         assertTrue(Utils.isPassEquals(pass1, hashAndSalt2));
         assertTrue(!Utils.isPassEquals(pass3, hashAndSalt2));
-    }
+    }*/
 
     @Test
     public void getFormattedDateTest() {

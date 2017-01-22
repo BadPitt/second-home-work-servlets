@@ -16,11 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.innopolis.course3.models.DBException;
+import ru.innopolis.course3.models.role.Role;
 import ru.innopolis.course3.models.user.User;
 import ru.innopolis.course3.services.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static ru.innopolis.course3.utils.Utils.getPasswordHash;
 
@@ -101,7 +105,7 @@ public class AuthController extends BaseController {
     @RequestMapping(params = "confirm_change_password",
             method = RequestMethod.POST)
     public String confirmChangePassword(
-            @RequestParam(name = "user_id", defaultValue = "0") int userId,
+            @RequestParam(name = "user_id", defaultValue = "0") long userId,
             @RequestParam(name = "user_version", defaultValue = "0") int userVersion,
             @RequestParam(name = "user_password", defaultValue = "") String password
             ) throws DBException {
@@ -116,10 +120,12 @@ public class AuthController extends BaseController {
         user.setPassword(hashAndSalt);
         user.setIsActive(true);
 
+        user.setRoles(getDefaultRoles());
+
         userService.addNewModelTransactionally(user);
     }
 
-    void changePassword(int userId,
+    void changePassword(long userId,
                         int userVersion,
                         String password) throws DBException {
         User user = userService.getByIdTransactionally(userId);
@@ -139,5 +145,14 @@ public class AuthController extends BaseController {
         Authentication authenticatedUser = authenticationManager.authenticate(token);
 
         SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
+    }
+
+    private List<Role> getDefaultRoles() {
+        List<Role> auth = new ArrayList<>();
+        Role role = new Role();
+        role.setId(2);
+        role.setName("ROLE_USER");
+        auth.add(role);
+        return auth;
     }
 }

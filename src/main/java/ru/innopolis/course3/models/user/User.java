@@ -11,21 +11,21 @@ import java.util.List;
  * @see BaseModel
  * @author Danil Popov
  */
-public class User extends BaseModel {//implements UserDetails {
+public class User extends BaseModel {
 
-    private int id;
+    private long id;
     private String name;
     private String password;
     private boolean isActive;
     private long version;
 
-    private List<Role> authorites;
+    private List<Role> roles;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -61,42 +61,12 @@ public class User extends BaseModel {//implements UserDetails {
         this.version = version;
     }
 
-    public List<Role> getAuthorites() {
-        return authorites;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    public void setAuthorites(List<Role> authorites) {
-        this.authorites = authorites;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
-
-    /*@Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorites;
-    }
-
-    @Override
-    public String getUsername() {
-        return name;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }*/
 }

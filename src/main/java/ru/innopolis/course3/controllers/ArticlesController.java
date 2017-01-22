@@ -88,7 +88,7 @@ public class ArticlesController extends BaseController {
             "(hasRole('ROLE_ADMIN') or " +
             "#authorName == principal.username)")
     @RequestMapping(params = "edit_article", method = RequestMethod.POST)
-    public String editArticle(@RequestParam(name = "article_id", defaultValue = "0") int articleId,
+    public String editArticle(@RequestParam(name = "article_id", defaultValue = "0") long articleId,
                               @RequestParam(name = "user_name", defaultValue = "") String authorName,
                               @RequestParam(name = "article_update_date", defaultValue = "0") long articleUpdateDate,
                               Model model) throws DBException {
@@ -119,8 +119,8 @@ public class ArticlesController extends BaseController {
             "#authorName == principal.username)")
     @RequestMapping(params = "delete_article",
             method = RequestMethod.POST)
-    public String deleteArticle(@RequestParam(name = "article_id", defaultValue = "0") int articleId,
-                                @RequestParam(name = "user_id", defaultValue = "0") int userId,
+    public String deleteArticle(@RequestParam(name = "article_id", defaultValue = "0") long articleId,
+                                @RequestParam(name = "user_id", defaultValue = "0") long userId,
                                 @RequestParam(name = "user_name", defaultValue = "") String authorName,
                                 @RequestParam(name = "article_update_date", defaultValue = "0") long articleUpdateDate
                                 ) throws DBException {
@@ -129,7 +129,7 @@ public class ArticlesController extends BaseController {
     }
 
     @RequestMapping(params = "view_more")
-    public String viewMoreArticle(@RequestParam(name = "article_id", defaultValue = "0") int articleId,
+    public String viewMoreArticle(@RequestParam(name = "article_id", defaultValue = "0") long articleId,
                                   Model model) throws DBException {
         List<Comment> comments = commentService.getCommentsByArticleId(articleId);
         Article article = articleService.getByIdTransactionally(articleId);
@@ -143,7 +143,7 @@ public class ArticlesController extends BaseController {
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(params = "send_comment",
             method = RequestMethod.POST)
-    public String addComment(@RequestParam(name = "article_id", defaultValue = "0") int articleId,
+    public String addComment(@RequestParam(name = "article_id", defaultValue = "0") long articleId,
                              @RequestParam(name = "comment_source", defaultValue = "") String source
                              ) throws DBException {
 

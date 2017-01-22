@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Entity(name = "article")
 public class ArticleEntity implements BaseEntity {
 
-    private int id;
+    private Long id;
     private String title;
     private String source;
     private UserEntity author;
@@ -19,13 +19,13 @@ public class ArticleEntity implements BaseEntity {
     private long updateDate;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "article_id")
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,7 +47,7 @@ public class ArticleEntity implements BaseEntity {
         this.source = source;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     public UserEntity getAuthor() {
         return author;

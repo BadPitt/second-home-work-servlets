@@ -12,18 +12,18 @@ import ru.innopolis.course3.utils.Utils;
  */
 public class Article extends BaseModel {
 
-    private int id;
+    private long id;
     private String title;
     private String source;
     private User author;
     private long date;
     private long updateDate;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

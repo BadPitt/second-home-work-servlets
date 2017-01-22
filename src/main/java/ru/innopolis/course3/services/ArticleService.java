@@ -7,6 +7,7 @@ import ru.innopolis.course3.models.DBException;
 import ru.innopolis.course3.models.article.Article;
 import ru.innopolis.course3.models.article.ArticleDao;
 import ru.innopolis.course3.models.article.ArticleEntity;
+import ru.innopolis.course3.models.article.ArticleRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,37 +20,37 @@ import java.util.List;
 @Service
 public class ArticleService extends BaseService<Article> {
 
-    private ArticleDao articleDao;
+    private ArticleRepository repository;
 
     @Autowired
-    @Qualifier("articleDao")
-    public void setArticleDao(ArticleDao articleDao) {
-        this.articleDao = articleDao;
+    public void setRepository(ArticleRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     protected void addNew(Article o) {
-        articleDao.add(ArticleEntity.getArticleEntity(o));
+        repository.save(ArticleEntity.getArticleEntity(o));
     }
 
     @Override
-    protected void removeById(int id, long updateDate) {
-        articleDao.removeById(id, updateDate);
+    protected void removeById(long id, long updateDate) {
+        // updateDate
+        repository.delete(id);
     }
 
     @Override
     protected void update(Article o) {
-        articleDao.update(ArticleEntity.getArticleEntity(o));
+        repository.save(ArticleEntity.getArticleEntity(o));
     }
 
     @Override
-    protected Article getById(int id) throws DBException {
-        return ArticleEntity.getArticle(articleDao.getById(id));
+    protected Article getById(long id) throws DBException {
+        return ArticleEntity.getArticle(repository.findOne(id));
     }
 
     @Override
     protected List<Article> getAll() throws DBException {
-        List<ArticleEntity> entities = articleDao.getAll();
+        Iterable<ArticleEntity> entities = repository.findAll();
         List<Article> articles = new ArrayList<>();
 
         for (ArticleEntity entity: entities) {

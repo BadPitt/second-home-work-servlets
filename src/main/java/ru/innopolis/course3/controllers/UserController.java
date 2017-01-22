@@ -10,10 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.innopolis.course3.models.DBException;
+import ru.innopolis.course3.models.role.Role;
 import ru.innopolis.course3.models.user.User;
 import ru.innopolis.course3.services.UserService;
 
 import javax.servlet.http.HttpSession;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static ru.innopolis.course3.utils.Utils.getPasswordHash;
 
@@ -64,7 +68,7 @@ public class UserController extends BaseController {
     @Secured("ROLE_ADMIN")
     @RequestMapping(params = "delete_user",
             method = RequestMethod.POST)
-    public String deleteUser(@RequestParam(name = "user_id", defaultValue = "0") int userId,
+    public String deleteUser(@RequestParam(name = "user_id", defaultValue = "0") long userId,
                              @RequestParam(name = "user_version", defaultValue = "0") int userVersion) throws DBException {
 
         userService.removeModelTransactionally(userId, userVersion);
@@ -75,7 +79,7 @@ public class UserController extends BaseController {
     @Secured("ROLE_ADMIN")
     @RequestMapping(params = "edit_user",
             method = RequestMethod.POST)
-    public String editUser(@RequestParam(name = "user_id", defaultValue = "0") int userId,
+    public String editUser(@RequestParam(name = "user_id", defaultValue = "0") long userId,
                            @RequestParam(name = "user_version", defaultValue = "0") int userVersion,
                            Model model) throws DBException {
 
@@ -87,11 +91,11 @@ public class UserController extends BaseController {
     @Secured("ROLE_ADMIN")
     @RequestMapping(params = "confirm_edit_user",
             method = RequestMethod.POST)
-    public String confirmEditUser(@RequestParam(name = "user_id", defaultValue = "0") int userId,
+    public String confirmEditUser(@RequestParam(name = "user_id", defaultValue = "0") long userId,
                              @RequestParam(name = "user_version", defaultValue = "0") int userVersion,
                              @RequestParam(name = "user_name", defaultValue = "") String name,
                              @RequestParam(name = "user_password", defaultValue = "") String password,
-                             @RequestParam(name = "user_is_admin", defaultValue = "2") int roleId,
+                             @RequestParam(name = "user_is_admin", defaultValue = "2") long roleId,
                              @RequestParam(name = "user_is_active", defaultValue = "false") boolean isActive) throws DBException {
         User user = getUpdateUser(userId,
                 userVersion,
@@ -106,18 +110,19 @@ public class UserController extends BaseController {
         return "redirect:/users/";
     }
 
-    private User getUpdateUser(int userId,
+    private User getUpdateUser(long userId,
                                   int userVersion,
                                   String name,
                                   String password,
-                                  int roleId,
+                                  long roleId,
                                   boolean isActive) {
         User user = new User();
         user.setId(userId);
         user.setName(name);
-        //user.setRoleId(roleId);
         user.setIsActive(isActive);
         user.setVersion(userVersion);
+
+        user.setRoles(getDefaultRoles());
 
         return user;
     }
@@ -125,6 +130,17 @@ public class UserController extends BaseController {
     private User handleAddUser(User user) {
         String hashAndSalt = getPasswordHash(user.getPassword());
         user.setPassword(hashAndSalt);
+
+        user.setRoles(getDefaultRoles());
         return user;
+    }
+
+    private List<Role> getDefaultRoles() {
+        List<Role> auth = new ArrayList<>();
+        Role role = new Role();
+        role.setId(2);
+        role.setName("ROLE_USER");
+        auth.add(role);
+        return auth;
     }
 }

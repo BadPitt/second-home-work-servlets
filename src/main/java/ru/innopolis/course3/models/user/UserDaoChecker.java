@@ -16,16 +16,16 @@ public class UserDaoChecker {
 
     private final Logger logger = LoggerFactory.getLogger(UserDaoChecker.class);
 
-    @Pointcut("target(ru.innopolis.course3.models.user.UserDao)")
+    @Pointcut("target(ru.innopolis.course3.models.user.UserRepository)")
     public void checkMethods() {}
 
     @Around("checkMethods()")
-    public Object checkUserDao(ProceedingJoinPoint joinPoint) throws DBException {
+    public Object checkUserDao(ProceedingJoinPoint joinPoint) {
         Object retVal = null;
         try {
             retVal = joinPoint.proceed();
         } catch (Throwable t) {
-            logger.error("User DAO exception", t);
+            logger.error("User Repository exception", t);
             throw new DBException();
         }
         return retVal;

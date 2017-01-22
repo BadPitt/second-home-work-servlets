@@ -22,17 +22,17 @@
         http://www.springframework.org/schema/aop
         http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <mvc:resources mapping="/resources/**"
-                   location="/resources/" />
-    <mvc:annotation-driven/>
+    <!--<mvc:annotation-driven/>-->
 
-    <context:component-scan base-package="ru.innopolis.course3"/>
+    <context:component-scan base-package="ru.innopolis.course3.models"/>
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass"
                   value="org.springframework.web.servlet.view.JstlView" />
         <property name="suffix" value=".jsp"/>
     </bean>
+
+
 
 
     <aop:aspectj-autoproxy />
@@ -47,14 +47,21 @@
     <bean id="commentDaoChecker"
           class="ru.innopolis.course3.models.comment.CommentDaoChecker"/>
 
-    <jee:jndi-lookup id="dataSource"
-                     jndi-name="/jdbc/publishingis"
-                     resource-ref="true" />
 
-    <bean id="jdbcTemplate"
-          class="org.springframework.jdbc.core.JdbcTemplate">
-        <constructor-arg ref="dataSource" />
+
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName"
+                  value="org.postgresql.Driver" />
+        <property name="url"
+                  value="jdbc:postgresql://localhost:5432/publishingis_test" />
+        <property name="username" value="postgres" />
+        <property name="password" value="postgres" />
     </bean>
+
+    <!--<jee:jndi-lookup id="dataSource"
+                     jndi-name="/jdbc/publishingis"
+                     resource-ref="true" />-->
 
     <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
         <property name="transactionManager" ref="transactionManager" />
@@ -100,8 +107,7 @@
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <rep:repositories base-package="ru.innopolis.course3"
+    <rep:repositories base-package="ru.innopolis.course3.models"
                       entity-manager-factory-ref="emf"
                       repository-impl-postfix="Impl"/>
-
 </beans>
