@@ -1,2 +1,5 @@
 rootProject.name = 'PublishingIS'
+include 'back'
+include 'commons'
+include 'client'
 
