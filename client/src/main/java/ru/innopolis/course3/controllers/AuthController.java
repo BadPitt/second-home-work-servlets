@@ -39,7 +39,7 @@ public class AuthController extends BaseController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    @Qualifier("userService")
+    //@Qualifier("userService")
     public void setUserService(UserService userService) {
         this.userService = userService;
     }

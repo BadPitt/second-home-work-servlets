@@ -20,7 +20,8 @@
         <intercept-url pattern="/resources/**" access="permitAll"/>
         <intercept-url pattern="/auth/**" access="permitAll"/>
         <intercept-url pattern="/home*" access="permitAll" />
-        <intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')" />
+        <intercept-url pattern="/articles*" access="permitAll" />
+        <!--<intercept-url pattern="/**" access="hasAnyRole('ROLE_ADMIN','ROLE_USER')" />-->
 
         <remember-me key="publishingKey"/>
 

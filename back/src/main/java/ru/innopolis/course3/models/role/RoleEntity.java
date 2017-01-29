@@ -1,13 +1,11 @@
 package ru.innopolis.course3.models.role;
 
-import org.springframework.security.core.GrantedAuthority;
 import ru.innopolis.course3.Role;
 import ru.innopolis.course3.models.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +13,7 @@ import java.util.List;
  * @author Danil Popov
  */
 @Entity(name = "user_roles")
-public class RoleEntity implements BaseEntity, GrantedAuthority {
+public class RoleEntity implements BaseEntity{
 
     private Long id;
     private String name;
@@ -59,11 +57,5 @@ public class RoleEntity implements BaseEntity, GrantedAuthority {
             entities.add(entity);
         }
         return entities;
-    }
-
-    @Transient
-    @Override
-    public String getAuthority() {
-        return getName();
     }
 }

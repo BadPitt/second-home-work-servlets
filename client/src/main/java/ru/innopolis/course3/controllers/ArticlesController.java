@@ -28,19 +28,19 @@ public class ArticlesController extends BaseController {
     private CommentService commentService;
 
     @Autowired
-    @Qualifier("articleService")
+    //@Qualifier("articleService")
     public void setArticleService(ArticleService articleService) {
         this.articleService = articleService;
     }
 
     @Autowired
-    @Qualifier("userService")
+    //@Qualifier("userService")
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
     @Autowired
-    @Qualifier("commentService")
+    //@Qualifier("commentService")
     public void setCommentService(CommentService commentService) {
         this.commentService = commentService;
     }

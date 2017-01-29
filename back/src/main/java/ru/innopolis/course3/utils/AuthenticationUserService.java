@@ -1,19 +1,22 @@
 package ru.innopolis.course3.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import ru.innopolis.course3.UserDetailsImpl;
 import ru.innopolis.course3.models.user.UserRepository;
+
+import java.io.Serializable;
 
 /**
  * @author Danil Popov
  */
 @Component
-public class AuthenticationUserService implements UserDetailsService {
+public class AuthenticationUserService
+        implements UserDetailsService, Serializable {
 
-    private UserRepository repository;
+    transient private UserRepository repository;
 
     @Autowired
     public void setRepository(UserRepository repository) {
@@ -21,7 +24,7 @@ public class AuthenticationUserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return repository.findByName(username);
+    public UserDetailsImpl loadUserByUsername(String username) throws UsernameNotFoundException {
+        return repository.findUserDetailsByName(username);
     }
 }

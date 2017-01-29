@@ -7,7 +7,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            WEB-INF/publishing-servlet.xml
+            WEB-INF/back-servlet.xml
         </param-value>
     </context-param>
 
@@ -18,12 +18,12 @@
     </listener>
 
     <servlet>
-        <servlet-name>publishing</servlet-name>
+        <servlet-name>back</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>publishing</servlet-name>
+        <servlet-name>back</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 

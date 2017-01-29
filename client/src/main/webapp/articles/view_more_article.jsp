@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -27,7 +28,7 @@
                     Author: ${article.getAuthor().getName()}
                 </h1>
                 <h1 class="mdl-card__subtitle-text">
-                    Date: ${article.getFormattedDate()}
+                    Date: <fmt:formatDate pattern="MM/dd/yyyy HH:mm" value="${article.getDate()}" />
                 </h1>
             </div>
             <div class="mdl-card__actions mdl-card--border">
@@ -67,7 +68,7 @@
                 User: ${comment.getUser().getName()}
             </h1>
             <h1 class="mdl-card__subtitle-text">
-                Date: ${comment.getFormattedDate()}
+                Date: <fmt:formatDate pattern="MM/dd/yyyy HH:mm" value="${comment.getDate()}" />
             </h1>
         </div>
         <div class="mdl-card__actions mdl-card--border">

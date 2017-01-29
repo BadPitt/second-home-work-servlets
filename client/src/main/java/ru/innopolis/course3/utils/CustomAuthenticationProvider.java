@@ -14,12 +14,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
  * @author Danil Popov
  */
-@Component
+@Component(value = "customAuthenticationProvider")
 public class CustomAuthenticationProvider
         implements AuthenticationProvider {
 

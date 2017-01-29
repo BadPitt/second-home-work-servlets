@@ -14,7 +14,7 @@ import java.util.List;
  * @author Danil Popov
  */
 @Entity(name = "p_user")
-public class UserEntity implements BaseEntity, UserDetails {
+public class UserEntity implements BaseEntity {
 
     private Long id;
     private String name;
@@ -108,7 +108,7 @@ public class UserEntity implements BaseEntity, UserDetails {
 
     /* USER DETAILS SPRING SECURITY */
 
-    @Transient
+    /*@Transient
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
@@ -142,5 +142,5 @@ public class UserEntity implements BaseEntity, UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
+    }*/
 }

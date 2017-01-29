@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -26,7 +27,7 @@
                     Author: ${article.getAuthor().getName()}"
                 </h1>
                 <h1 class="mdl-card__subtitle-text">
-                    Date: ${article.getFormattedDate()}
+                    Date: <fmt:formatDate pattern="MM/dd/yyyy HH:mm" value="${article.getDate()}" />
                 </h1>
             </div>
             <div class="mdl-card__actions mdl-card--border" style="display: flex;padding-bottom: 0;">

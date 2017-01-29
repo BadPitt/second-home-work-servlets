@@ -29,7 +29,7 @@ public class UserController extends BaseController {
     private UserService userService;
 
     @Autowired
-    @Qualifier("userService")
+    //@Qualifier("userService")
     public void setUserService(UserService userService) {
         this.userService = userService;
     }

@@ -7,7 +7,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            WEB-INF/publishing-servlet.xml
+            WEB-INF/client-servlet.xml
             WEB-INF/security-context.xml
         </param-value>
     </context-param>
